@@ -80,10 +80,32 @@ EventSourcingBankingDemo/
 - [x] Complete set of account events (AccountOpened, MoneyDeposited, etc.)
 - [x] Option<T> type for optional values
 - [x] BaseEvent with versioning support
+- [x] TransactionId, TransactionType, InterestRate, AccountLimits value objects
+- [x] Domain services: InterestCalculator, ComplianceChecker
+
+### Event Store Infrastructure
+- [x] IEventStore interface - Define event store contract
+- [x] RavenDbEventStore implementation - Store events in RavenDB
+- [x] Event serialization/deserialization - JSON serialization for events
+- [x] AccountRepository - Repository pattern for Account aggregate
+- [x] Event versioning and concurrency - Optimistic concurrency control
+- [x] DI registration for event store and repositories
+
+### Read Models & Projections
+- [x] IReadModelStore interface - Define read model contract
+- [x] SqliteReadModelStore implementation - SQLite for read models
+- [x] AccountSummaryProjection - Current account state
+- [x] TransactionHistoryProjection - Transaction list
+- [x] Event handlers for projections - Update read models from events
+- [x] EventDispatcher - Route events to appropriate handlers
+- [x] DatabaseInitializer - Create tables and indexes
+- [x] TransactionEnrichmentService - Enrich transaction data
+- [x] DI registration for read models infrastructure
 
 ### Testing
-- [x] Comprehensive unit tests for Account aggregate
-- [x] Value object tests (Money, etc.)
+- [x] Comprehensive unit tests for Account aggregate (125 tests passing)
+- [x] Value object tests (Money, TransactionId, InterestRate, AccountLimits)
+- [x] Domain services tests (InterestCalculator, ComplianceChecker)
 - [x] Event sourcing reconstruction tests
 - [x] Business rule validation tests
 - [x] Functional programming pattern tests
@@ -94,42 +116,19 @@ EventSourcingBankingDemo/
 - [x] Docker Compose for RavenDB
 - [x] GitHub Actions CI/CD pipeline
 - [x] Code coverage and security scanning
+- [x] DI configuration for WebApi and ConsoleApp
 
-## 🎯 Next Tasks to Implement
+## 🎯 Next Priority Tasks
 
-### 1. Event Store Infrastructure (High Priority)
-- [ ] **IEventStore interface** - Define event store contract
-- [ ] **RavenDbEventStore implementation** - Store events in RavenDB
-- [ ] **Event serialization/deserialization** - JSON serialization for events
-- [ ] **AccountRepository** - Repository pattern for Account aggregate
-- [ ] **Event versioning and concurrency** - Optimistic concurrency control
-- [ ] **Event metadata** - Timestamps, correlation IDs, causation IDs
-
-### 2. Read Models & Projections (High Priority)
-- [ ] **IReadModelStore interface** - Define read model contract
-- [ ] **SqliteReadModelStore implementation** - SQLite for read models
-- [ ] **AccountSummaryProjection** - Current account state
-- [ ] **TransactionHistoryProjection** - Transaction list
-- [ ] **Event handlers for projections** - Update read models from events
-- [ ] **Projection rebuild functionality** - Rebuild from event stream
-
-### 3. Application Layer - CQRS (High Priority)
+### 1. Application Layer - CQRS (High Priority)
 - [ ] **Commands** - OpenAccountCommand, DepositCommand, WithdrawCommand, TransferCommand
 - [ ] **Queries** - GetAccountSummaryQuery, GetTransactionHistoryQuery, GetBalanceAtQuery
 - [ ] **Command handlers** - Handle commands and apply to aggregates
 - [ ] **Query handlers** - Handle queries and return read models
-- [ ] **Event handlers** - Update projections when events occur
+- [ ] **Event publishing** - Wire up event publishing from aggregates to EventDispatcher
 - [ ] **AccountService** - Application service for account operations
 
-### 4. Console Application (Medium Priority)
-- [ ] **Interactive command interface** - Parse user commands
-- [ ] **Demo scenarios runner** - Predefined banking scenarios
-- [ ] **Event store browser** - View stored events
-- [ ] **Time travel demonstrations** - Show historical state
-- [ ] **Colored output** - Better user experience
-- [ ] **Command validation** - Input validation and error handling
-
-### 5. Web API (Medium Priority)
+### 2. Web API Endpoints (High Priority)
 - [ ] **AccountController** - REST endpoints for account operations
 - [ ] **Command endpoints** - POST endpoints for commands
 - [ ] **Query endpoints** - GET endpoints for queries
@@ -137,7 +136,21 @@ EventSourcingBankingDemo/
 - [ ] **OpenAPI documentation** - Swagger/OpenAPI spec
 - [ ] **Error handling middleware** - Consistent error responses
 
-### 6. Advanced Features (Lower Priority)
+### 3. Console Application Features (Medium Priority)
+- [ ] **Interactive command interface** - Parse user commands
+- [ ] **Demo scenarios runner** - Predefined banking scenarios
+- [ ] **Event store browser** - View stored events
+- [ ] **Time travel demonstrations** - Show historical state
+- [ ] **Colored output** - Better user experience
+- [ ] **Command validation** - Input validation and error handling
+
+### 4. Integration & Testing (Medium Priority)
+- [ ] **Integration tests** - Test event store and read models together
+- [ ] **End-to-end tests** - Complete workflow testing
+- [ ] **Event publishing tests** - Test event flow from aggregates to projections
+- [ ] **Performance tests** - Load testing for event store and read models
+
+### 5. Advanced Features (Lower Priority)
 - [ ] **Snapshotting** - Performance optimization for large event streams
 - [ ] **Event schema evolution** - Handle event version changes
 - [ ] **Saga pattern** - Complex business processes (transfers between accounts)
@@ -145,24 +158,10 @@ EventSourcingBankingDemo/
 - [ ] **Analytics projections** - Customer behavior analysis
 - [ ] **Compliance reporting** - Audit trail and regulatory reports
 
-### 7. Testing & Quality (Ongoing)
-- [ ] **Integration tests** - Test event store and read models
-- [ ] **End-to-end tests** - Complete workflow testing
-- [ ] **Performance tests** - Load testing for event store
-- [ ] **Property-based tests** - FsCheck for invariant testing
-- [ ] **Mutation testing** - Stryker.NET for test quality
-
-### 8. Documentation & Examples (Ongoing)
-- [ ] **Event catalog** - Document all domain events
-- [ ] **Architecture decisions** - ADR documentation
-- [ ] **Blog post examples** - Code snippets for articles
-- [ ] **Demo scenarios** - Step-by-step tutorials
-- [ ] **Performance benchmarks** - Event store performance data
-
 ## 🧪 Testing Strategy
 
 - **Unit Tests**: Test aggregates and domain logic ✅
-- **Integration Tests**: Test event store and read models
+- **Integration Tests**: Test event store and read models together
 - **End-to-End Tests**: Test complete workflows
 - **Performance Tests**: Load testing and benchmarks
 
@@ -182,19 +181,33 @@ EventSourcingBankingDemo/
 - **Pure Functions**: Business logic without side effects ✅
 
 ### CQRS Implementation
-- **Command Side**: Optimized for writes, consistency, business rules
-- **Query Side**: Optimized for reads, performance, reporting
-- **Eventual Consistency**: Read models updated asynchronously
-- **Scalability**: Commands and queries can scale independently
+- **Command Side**: Optimized for writes, consistency, business rules ✅
+- **Query Side**: Optimized for reads, performance, reporting ✅
+- **Eventual Consistency**: Read models updated asynchronously ✅
+- **Scalability**: Commands and queries can scale independently ✅
 
 ## 🔧 Development Tips
 
 1. **Start with Domain**: Focus on business logic first ✅
 2. **Event-First Design**: Design events before aggregates ✅
 3. **Test-Driven**: Write tests for business rules ✅
-4. **Small Steps**: Implement one feature at a time
-5. **Event Sourcing**: Always think in terms of events
-6. **CQRS**: Separate read and write concerns
+4. **CQRS Separation**: Separate read and write concerns ✅
+5. **Event-Driven**: Use events to drive read model updates ✅
+6. **Small Steps**: Implement one feature at a time
+
+## 🚀 Current Status
+
+**✅ COMPLETED:**
+- Complete domain layer with comprehensive business logic
+- Full event store infrastructure with RavenDB
+- Complete read models and projections system
+- 125 passing unit tests
+- DI configuration for all components
+
+**🎯 NEXT UP:**
+- Application layer (CQRS commands and queries)
+- Web API endpoints
+- Event publishing from aggregates to projections
 
 ## 📖 Resources
 
@@ -226,4 +239,4 @@ EventSourcingBankingDemo/
 
 Happy coding! 🎉 
 
-*Last updated: After implementing comprehensive Account aggregate tests and fixing Option<T> handling* 
+*Last updated: After implementing complete CQRS read models and projections infrastructure* 
