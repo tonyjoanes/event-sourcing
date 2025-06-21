@@ -1,9 +1,29 @@
+using Infrastructure.EventStore;
+using Infrastructure.Repositories;
+using Raven.Client.Documents;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// RavenDB configuration (for development/demo)
+builder.Services.AddSingleton<IDocumentStore>(sp =>
+{
+    var store = new DocumentStore
+    {
+        Urls = new[] { "http://localhost:8080" },
+        Database = "EventSourcingBankingDemo"
+    };
+    store.Initialize();
+    return store;
+});
+
+// Event store and repository
+builder.Services.AddScoped<IEventStore, RavenDbEventStore>();
+builder.Services.AddScoped<AccountRepository>();
 
 var app = builder.Build();
 

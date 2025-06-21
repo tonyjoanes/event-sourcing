@@ -52,7 +52,7 @@ jobs:
         path: ./coverage/report/
         
   security:
-    name: Security Check
+    name: Security Scan
     runs-on: ubuntu-latest
     
     steps:
@@ -63,9 +63,12 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
-        
-    - name: Check for vulnerable packages
-      run: dotnet list package --vulnerable
+    
+    - name: Restore solution
+      run: dotnet restore EventSourcingBankingDemo.sln
       
-    - name: Audit dependencies
-      run: dotnet restore --force-evaluate 
+    - name: Run security audit
+      run: dotnet list EventSourcingBankingDemo.sln package --vulnerable
+      
+    - name: Run dependency check
+      run: dotnet restore EventSourcingBankingDemo.sln --force-evaluate  
