@@ -29,7 +29,7 @@ public abstract class AggregateRoot
         foreach (var @event in events)
         {
             When(@event);
-            _version = @event.Version;
+            _version++;
         }
     }
 
@@ -38,7 +38,7 @@ public abstract class AggregateRoot
         _uncommittedEvents.Clear();
     }
 
-    protected void EnsureValidState()
+    protected virtual void EnsureValidState()
     {
         // Override in derived classes to implement business rule validation
     }

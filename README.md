@@ -1,9 +1,9 @@
 # Event Sourcing Banking Demo
 
-[![Build and Test](https://github.com/your-username/event-sourcing/actions/workflows/build.yml/badge.svg)](https://github.com/your-username/event-sourcing/actions/workflows/build.yml)
+[![Build and Test](https://github.com/tonyjoanes/event-sourcing/actions/workflows/build.yml/badge.svg)](https://github.com/tonyjoanes/event-sourcing/actions/workflows/build.yml)
 [![.NET](https://img.shields.io/badge/.NET-8.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/8.0)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Code Coverage](https://img.shields.io/badge/coverage-0%25-red.svg)](https://github.com/your-username/event-sourcing)
+[![Code Coverage](https://img.shields.io/badge/coverage-0%25-red.svg)](https://github.com/tonyjoanes/event-sourcing)
 
 A practical demonstration of Event Sourcing patterns using C#, showcasing how to build a robust banking system with complete audit trails, time travel capabilities, and powerful analytics.
 
