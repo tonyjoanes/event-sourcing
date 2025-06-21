@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  ravendb:
+    image: ravendb/ravendb:7.0-latest
+    container_name: event-sourcing-ravendb
+    ports:
+      - "8080:8080"  # RavenDB Studio
+      - "38888:38888"  # RavenDB Server
+    environment:
+      - RAVEN_Setup_Mode=Initial
+      - RAVEN_ServerUrl=http://0.0.0.0:38888
+      - RAVEN_StudioDirectory=/opt/RavenDB/Server/WebUI
+    volumes:
+      - ravendb-data:/opt/RavenDB/Server/RavenData
+    networks:
+      - event-sourcing-network
+
+volumes:
+  ravendb-data:
+    driver: local
+
+networks:
+  event-sourcing-network:
+    driver: bridge 

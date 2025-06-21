@@ -1,0 +1,56 @@
+# .NET build artifacts
+bin/
+obj/
+*.user
+*.suo
+*.cache
+*.dll
+*.exe
+*.pdb
+
+# Visual Studio files
+.vs/
+*.sln.docstates
+
+# Rider files
+.idea/
+
+# Test results
+TestResults/
+*.trx
+
+# Coverage reports
+*.coverage
+*.coveragexml
+
+# NuGet packages
+*.nupkg
+packages/
+
+# SQLite databases
+*.db
+*.sqlite
+*.sqlite3
+
+# RavenDB data
+RavenData/
+
+# Logs
+*.log
+logs/
+
+# Environment files
+.env
+.env.local
+
+# Docker volumes
+docker/ravendb-data/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db 
