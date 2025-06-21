@@ -63,8 +63,10 @@ public class ComplianceChecker
         }
 
         // Check for unusual withdrawal patterns
-        if (transactionType == TransactionType.Withdrawal && 
-            dailyTransactionTotal + amount > _suspiciousActivityThreshold)
+        if (
+            transactionType == TransactionType.Withdrawal
+            && dailyTransactionTotal + amount > _suspiciousActivityThreshold
+        )
         {
             return new ComplianceViolation(
                 ComplianceViolationType.UnusualActivity,
@@ -122,8 +124,7 @@ public class ComplianceChecker
 
     public bool RequiresEnhancedDueDiligence(Money amount, TransactionType transactionType)
     {
-        return amount >= _largeTransactionThreshold || 
-               transactionType == TransactionType.Transfer;
+        return amount >= _largeTransactionThreshold || transactionType == TransactionType.Transfer;
     }
 }
 
@@ -140,5 +141,5 @@ public enum ComplianceViolationType
     UnusualActivity,
     MoneyLaundering,
     TerroristFinancing,
-    SanctionsViolation
-} 
+    SanctionsViolation,
+}
