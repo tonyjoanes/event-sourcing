@@ -65,10 +65,10 @@ jobs:
         dotnet-version: ${{ env.DOTNET_VERSION }}
     
     - name: Restore solution
-      run: dotnet restore
+      run: dotnet restore EventSourcingBankingDemo.sln
       
     - name: Run security audit
-      run: dotnet list package --vulnerable
+      run: dotnet list EventSourcingBankingDemo.sln package --vulnerable
       
     - name: Run dependency check
-      run: dotnet restore --force-evaluate 
+      run: dotnet restore EventSourcingBankingDemo.sln --force-evaluate 
