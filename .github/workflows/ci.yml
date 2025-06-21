@@ -56,7 +56,9 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
-        
+    
+    - name: Restore solution
+      run: dotnet restore
     - name: Run security audit
       run: dotnet list package --vulnerable
       
