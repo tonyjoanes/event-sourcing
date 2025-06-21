@@ -19,10 +19,8 @@ public class MoneyTests
     [Fact]
     public void Create_WithNegativeAmount_ShouldThrowException()
     {
-        // Act & Assert
-        var action = () => new Money(-100m);
-        action.Should().Throw<ArgumentException>()
-            .WithMessage("Money amount cannot be negative*");
+        Action act = () => Money.Create(-10m, "USD");
+        act.Should().Throw<ArgumentException>().WithMessage("*cannot be negative*");
     }
 
     [Fact]

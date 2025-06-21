@@ -37,14 +37,9 @@ public class AccountTests
     [Trait("Category", "Unit")]
     public void Open_WithNegativeBalance_ShouldReturnValidationError()
     {
-        // Arrange
-        var customerId = CustomerId.Generate();
-        // Note: Money constructor will throw for negative amounts, so we test this at the Money level
-        // The Account.Open method doesn't need to validate this since Money does it
-
-        // Act & Assert
-        Action act = () => new Money(-100m);
-        act.Should().Throw<ArgumentException>().WithMessage("*Money amount cannot be negative*");
+        var result = Account.Open(CustomerId.Generate(), new Money(-100, "USD"));
+        result.IsT1.Should().BeTrue();
+        result.AsT1.Should().BeOfType<ValidationError>();
     }
 
     [Fact]
@@ -88,12 +83,10 @@ public class AccountTests
     [Trait("Category", "Unit")]
     public void Deposit_WithNegativeAmount_ShouldReturnValidationError()
     {
-        // Arrange
-        var account = CreateTestAccount(1000m);
-
-        // Act & Assert
-        Action act = () => account.Deposit(new Money(-100m));
-        act.Should().Throw<ArgumentException>().WithMessage("*Money amount cannot be negative*");
+        var account = Account.Open(CustomerId.Generate(), new Money(100, "USD")).AsT0;
+        var result = account.Deposit(new Money(-50, "USD"));
+        result.IsT3.Should().BeTrue();
+        result.AsT3.Should().BeOfType<ValidationError>();
     }
 
     [Fact]
