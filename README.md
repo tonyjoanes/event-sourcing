@@ -7,6 +7,12 @@
 
 A practical demonstration of Event Sourcing patterns using C#, showcasing how to build a robust banking system with complete audit trails, time travel capabilities, and powerful analytics.
 
+## 📖 Quick Navigation
+
+**📋 Getting Started:** [Setup Guide](GETTING_STARTED.md) • [Contributing](CONTRIBUTING.md) • [CI/CD Docs](docs/CI_CD_SETUP.md)  
+**🏗️ Architecture:** [Event Sourcing Guide](Event-Sourcing-Comprehensive-Guide.md) • [API Docs](src/WebApi/Controllers/AccountController.cs)  
+**🔧 Development:** [Branch Protection](docs/BRANCH_PROTECTION_SETUP.md) • [PR Template](.github/pull_request_template.md) • [Code Owners](.github/CODEOWNERS)
+
 ## 🎯 Project Goals
 
 This project demonstrates:
@@ -389,6 +395,43 @@ dotnet test --filter Category=Performance
 # Generate coverage report
 dotnet test --collect:"XPlat Code Coverage"
 ```
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details on:
+
+- **Development workflow** and branch protection
+- **Code quality standards** and testing requirements
+- **Pull request process** with comprehensive templates
+- **Event sourcing best practices** and review guidelines
+
+### Quick Start for Contributors
+
+1. **Read the guides**: [Contributing Guide](CONTRIBUTING.md) and [CI/CD Setup](docs/CI_CD_SETUP.md)
+2. **Fork and clone** the repository
+3. **Create feature branch**: `git checkout -b feature/your-feature`
+4. **Follow quality standards**: Run tests and formatting checks locally
+5. **Submit PR**: Use our [PR template](.github/pull_request_template.md)
+
+## 📚 Documentation
+
+### Architecture & Design
+- **[Event Sourcing Guide](Event-Sourcing-Comprehensive-Guide.md)** - Complete technical deep-dive
+- **[Getting Started](GETTING_STARTED.md)** - Quick setup and demo scenarios
+- **[API Documentation](src/WebApi/Controllers/AccountController.cs)** - Comprehensive Swagger docs
+
+### Development & Operations
+- **[📁 Documentation Index](docs/README.md)** - Complete docs navigation
+- **[Contributing Guide](CONTRIBUTING.md)** - Development workflow and standards
+- **[CI/CD Setup](docs/CI_CD_SETUP.md)** - Complete pipeline documentation
+- **[Branch Protection](docs/BRANCH_PROTECTION_SETUP.md)** - GitHub setup instructions
+- **[Project Summary](docs/BRANCH_PROTECTION_SUMMARY.md)** - Implementation overview
+
+### Templates & Guidelines
+- **[Pull Request Template](.github/pull_request_template.md)** - Structured PR submissions
+- **[Bug Report Template](.github/ISSUE_TEMPLATE/bug_report.md)** - Issue reporting
+- **[Feature Request Template](.github/ISSUE_TEMPLATE/feature_request.md)** - Enhancement proposals
+- **[Code Owners](.github/CODEOWNERS)** - Automatic reviewer assignment
 
 ## 📊 Key Concepts Demonstrated
 
