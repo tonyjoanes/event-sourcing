@@ -1,7 +1,6 @@
 using Domain.Events;
 using Newtonsoft.Json;
 using Raven.Client.Documents;
-using Raven.Client.Documents.Session;
 
 namespace Infrastructure.EventStore;
 

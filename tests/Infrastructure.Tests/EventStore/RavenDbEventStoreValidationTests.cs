@@ -1,5 +1,4 @@
 using Infrastructure.EventStore;
-using Xunit;
 
 namespace Infrastructure.Tests.EventStore;
 
@@ -13,4 +12,4 @@ public class RavenDbEventStoreValidationTests
         var exception = Assert.Throws<ArgumentNullException>(() => new RavenDbEventStore(null!));
         Assert.Equal("documentStore", exception.ParamName);
     }
-} 
+}

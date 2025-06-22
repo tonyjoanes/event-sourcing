@@ -1,5 +1,3 @@
-using Domain.ValueObjects;
-
 namespace Domain.ValueObjects;
 
 public record AccountLimits

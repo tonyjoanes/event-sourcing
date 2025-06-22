@@ -2,7 +2,6 @@ using Domain.Aggregates;
 using Domain.Events;
 using Domain.ValueObjects;
 using FluentAssertions;
-using OneOf;
 
 namespace Domain.Tests.Aggregates;
 

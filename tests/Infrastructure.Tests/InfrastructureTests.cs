@@ -1,5 +1,3 @@
-using Xunit;
-
 namespace Infrastructure.Tests;
 
 public class InfrastructureTests

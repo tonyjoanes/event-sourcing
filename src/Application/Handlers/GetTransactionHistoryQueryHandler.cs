@@ -1,7 +1,5 @@
 using Application.Queries;
-using Domain.ValueObjects;
 using Infrastructure.ReadModels;
-using Infrastructure.ReadModels.Projections;
 
 namespace Application.Handlers;
 

@@ -1,6 +1,5 @@
 using Application.Queries;
 using Domain.Aggregates;
-using Domain.ValueObjects;
 using Infrastructure.Repositories;
 
 namespace Application.Handlers;

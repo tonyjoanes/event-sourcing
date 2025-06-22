@@ -1,5 +1,4 @@
 using Application.Commands;
-using Domain.Aggregates;
 using Domain.ValueObjects;
 using Infrastructure.ReadModels.Projections;
 using Infrastructure.Repositories;

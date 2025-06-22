@@ -1,13 +1,13 @@
 using Application.Handlers;
 using Application.Services;
 using Domain.ValueObjects;
-using Infrastructure.ReadModels;
-using Infrastructure.ReadModels.Projections;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using FluentAssertions;
 using Infrastructure.EventStore;
+using Infrastructure.ReadModels;
+using Infrastructure.ReadModels.Projections;
 using Infrastructure.Repositories;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Integration.Tests;
 
@@ -27,7 +27,9 @@ public class EventPublishingTests : IDisposable
                 (context, services) =>
                 {
                     // Configure services for testing
-                    services.AddSingleton<IReadModelStore>(sp => new SqliteReadModelStore("Data Source=file:memdb1?mode=memory&cache=shared"));
+                    services.AddSingleton<IReadModelStore>(sp => new SqliteReadModelStore(
+                        "Data Source=file:memdb1?mode=memory&cache=shared"
+                    ));
                     services.AddScoped<AccountSummaryProjectionHandler>();
                     services.AddScoped<TransactionHistoryProjectionHandler>();
                     services.AddScoped<TransactionEnrichmentService>();
@@ -58,7 +60,9 @@ public class EventPublishingTests : IDisposable
         _readModelStore = _scope.ServiceProvider.GetRequiredService<IReadModelStore>();
 
         // Initialize the in-memory SQLite schema
-        var dbInitializer = new Infrastructure.ReadModels.DatabaseInitializer("Data Source=file:memdb1?mode=memory&cache=shared");
+        var dbInitializer = new Infrastructure.ReadModels.DatabaseInitializer(
+            "Data Source=file:memdb1?mode=memory&cache=shared"
+        );
         dbInitializer.InitializeAsync().GetAwaiter().GetResult();
     }
 
@@ -196,7 +200,7 @@ public class EventPublishingTests : IDisposable
 
         fromTransactions.Should().HaveCount(1); // Only MoneyTransferred (AccountOpened is not a transaction)
         toTransactions.Should().HaveCount(1); // Only MoneyDeposited from transfer (AccountOpened is not a transaction)
-        
+
         fromTransactions[0].Type.Should().Be("TransferOut");
         toTransactions[0].Type.Should().Be("TransferIn");
     }
@@ -243,23 +247,30 @@ public class EventPublishingTests : IDisposable
         // Assert
         result.IsT0.Should().BeTrue(); // Success
         var success = result.AsT0;
-        
+
         // Debug: Check if the account was created
         Console.WriteLine($"Account created with ID: {success.Data.AccountId.Value}");
-        
+
         // Debug: Check if read model exists
-        var accountSummary = await _readModelStore.GetAccountSummaryAsync(success.Data.AccountId.Value);
+        var accountSummary = await _readModelStore.GetAccountSummaryAsync(
+            success.Data.AccountId.Value
+        );
         Console.WriteLine($"Account summary found: {accountSummary != null}");
-        
+
         if (accountSummary != null)
         {
-            Console.WriteLine($"Account summary - ID: {accountSummary.Id}, Balance: {accountSummary.Balance}");
+            Console.WriteLine(
+                $"Account summary - ID: {accountSummary.Id}, Balance: {accountSummary.Balance}"
+            );
         }
-        
+
         // Debug: Check transaction history
-        var transactions = await _readModelStore.GetTransactionHistoryAsync(success.Data.AccountId.Value, 10);
+        var transactions = await _readModelStore.GetTransactionHistoryAsync(
+            success.Data.AccountId.Value,
+            10
+        );
         Console.WriteLine($"Transaction count: {transactions.Count}");
-        
+
         // The test should pass if we can see the debug output
         success.Data.AccountId.Should().NotBeNull();
     }
@@ -274,7 +285,7 @@ public class EventPublishingTests : IDisposable
             AccountId = new Domain.ValueObjects.AccountId("TEST123"),
             CustomerId = new Domain.ValueObjects.CustomerId("CUST123"),
             InitialBalance = new Domain.ValueObjects.Money(1000m),
-            OpenedAt = DateTimeOffset.UtcNow
+            OpenedAt = DateTimeOffset.UtcNow,
         };
 
         // Act
@@ -282,13 +293,17 @@ public class EventPublishingTests : IDisposable
 
         // Assert
         var accountSummary = await _readModelStore.GetAccountSummaryAsync("TEST123");
-        Console.WriteLine($"EventDispatcher test - Account summary found: {accountSummary != null}");
-        
+        Console.WriteLine(
+            $"EventDispatcher test - Account summary found: {accountSummary != null}"
+        );
+
         if (accountSummary != null)
         {
-            Console.WriteLine($"EventDispatcher test - Account summary - ID: {accountSummary.Id}, Balance: {accountSummary.Balance}");
+            Console.WriteLine(
+                $"EventDispatcher test - Account summary - ID: {accountSummary.Id}, Balance: {accountSummary.Balance}"
+            );
         }
-        
+
         // The test should pass if EventDispatcher is working
         accountSummary.Should().NotBeNull();
         accountSummary!.Id.Should().Be("TEST123");

@@ -1,5 +1,4 @@
 using Infrastructure.EventStore;
-using Xunit;
 
 namespace Infrastructure.Tests.EventStore;
 
@@ -72,4 +71,4 @@ public class ConcurrencyExceptionTests
         Assert.Equal(message, exception.Message);
         Assert.Null(exception.InnerException);
     }
-} 
+}

@@ -1,5 +1,3 @@
-using Xunit;
-
 namespace Application.Tests;
 
 public class ApplicationTests

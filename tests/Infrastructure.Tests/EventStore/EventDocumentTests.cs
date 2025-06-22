@@ -1,5 +1,4 @@
 using Infrastructure.EventStore;
-using Xunit;
 
 namespace Infrastructure.Tests.EventStore;
 
@@ -117,4 +116,4 @@ public class EventDocumentTests
         // Assert
         Assert.Equal(long.MaxValue, eventDocument.Version);
     }
-} 
+}

@@ -1,13 +1,10 @@
 using System.ComponentModel.DataAnnotations;
-using Application.Commands;
-using Application.Queries;
 using Application.Services;
 using Domain.Aggregates;
 using Domain.ValueObjects;
 using Infrastructure.EventStore;
 using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using OneOf;
 
 namespace WebApi.Controllers;
 

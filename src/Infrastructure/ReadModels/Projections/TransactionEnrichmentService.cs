@@ -1,5 +1,3 @@
-using Infrastructure.ReadModels;
-
 namespace Infrastructure.ReadModels.Projections;
 
 public class TransactionEnrichmentService

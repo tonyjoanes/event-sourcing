@@ -1,5 +1,3 @@
-using System.Globalization;
-
 namespace Domain.ValueObjects;
 
 public record Money

@@ -1,5 +1,3 @@
-using Xunit;
-
 namespace Integration.Tests;
 
 public class IntegrationTests
