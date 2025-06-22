@@ -1,18 +1,46 @@
+using System.Reflection;
+using Application.Handlers;
+using Application.Services;
 using Infrastructure.EventStore;
 using Infrastructure.ReadModels;
 using Infrastructure.ReadModels.Projections;
 using Infrastructure.Repositories;
-using Application.Services;
-using Application.Handlers;
-using WebApi.Middleware;
 using Raven.Client.Documents;
+using WebApi.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc(
+        "v1",
+        new()
+        {
+            Title = "Event Sourcing Banking Demo API",
+            Version = "v1",
+            Description =
+                "A comprehensive demonstration of event sourcing patterns in banking, featuring time travel queries, audit trails, and what-if analysis.",
+            Contact = new()
+            {
+                Name = "Event Sourcing Demo",
+                Url = new Uri("https://github.com/tonyjoanes/event-sourcing"),
+            },
+        }
+    );
+
+    // Include XML comments in Swagger
+    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+
+    // Group endpoints by category
+    c.TagActionsBy(api =>
+        new[] { api.GroupName ?? api.ActionDescriptor.RouteValues["controller"] }
+    );
+    c.DocInclusionPredicate((name, api) => true);
+});
 
 // Add controllers
 builder.Services.AddControllers();
@@ -71,7 +99,17 @@ using (var scope = app.Services.CreateScope())
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Event Sourcing Banking Demo API v1");
+        c.RoutePrefix = "swagger"; // Keep it at /swagger instead of root
+        c.DocumentTitle = "Event Sourcing Banking Demo API";
+        c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.List);
+        c.EnableDeepLinking();
+        c.EnableFilter();
+        c.ShowExtensions();
+        c.EnableValidator();
+    });
 }
 
 app.UseHttpsRedirection();

@@ -8,7 +8,10 @@ public class ExceptionHandlingMiddleware
     private readonly RequestDelegate _next;
     private readonly ILogger<ExceptionHandlingMiddleware> _logger;
 
-    public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
+    public ExceptionHandlingMiddleware(
+        RequestDelegate next,
+        ILogger<ExceptionHandlingMiddleware> logger
+    )
     {
         _next = next;
         _logger = logger;
@@ -30,15 +33,15 @@ public class ExceptionHandlingMiddleware
     private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
         context.Response.ContentType = "application/json";
-        
+
         var response = new
         {
             Error = new
             {
                 Message = "An unexpected error occurred",
                 Type = exception.GetType().Name,
-                Timestamp = DateTimeOffset.UtcNow
-            }
+                Timestamp = DateTimeOffset.UtcNow,
+            },
         };
 
         switch (exception)
@@ -51,11 +54,11 @@ public class ExceptionHandlingMiddleware
                     {
                         Message = exception.Message,
                         Type = "ValidationError",
-                        Timestamp = DateTimeOffset.UtcNow
-                    }
+                        Timestamp = DateTimeOffset.UtcNow,
+                    },
                 };
                 break;
-            
+
             case InvalidOperationException:
                 context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 response = new
@@ -64,21 +67,21 @@ public class ExceptionHandlingMiddleware
                     {
                         Message = exception.Message,
                         Type = "BusinessRuleViolation",
-                        Timestamp = DateTimeOffset.UtcNow
-                    }
+                        Timestamp = DateTimeOffset.UtcNow,
+                    },
                 };
                 break;
-            
+
             default:
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 break;
         }
 
-        var jsonResponse = JsonSerializer.Serialize(response, new JsonSerializerOptions
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        });
-        
+        var jsonResponse = JsonSerializer.Serialize(
+            response,
+            new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }
+        );
+
         await context.Response.WriteAsync(jsonResponse);
     }
-} 
+}

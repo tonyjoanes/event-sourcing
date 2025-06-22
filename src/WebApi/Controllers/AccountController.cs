@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Application.Commands;
 using Application.Queries;
 using Application.Services;
@@ -10,8 +11,20 @@ using OneOf;
 
 namespace WebApi.Controllers;
 
+/// <summary>
+/// Event Sourcing Banking API - Account Management and Time Travel Operations
+/// </summary>
+/// <remarks>
+/// This controller demonstrates advanced event sourcing patterns including:
+/// - Traditional CRUD operations backed by event streams
+/// - Time travel queries to view historical account states
+/// - Audit trails and compliance reporting
+/// - What-if scenario analysis
+/// - Complete event stream inspection
+/// </remarks>
 [ApiController]
 [Route("api/[controller]")]
+[Produces("application/json")]
 public class AccountController : ControllerBase
 {
     private readonly AccountService _accountService;
@@ -24,7 +37,25 @@ public class AccountController : ControllerBase
     }
 
     // Command endpoints
+
+    /// <summary>
+    /// Opens a new bank account with an initial balance
+    /// </summary>
+    /// <param name="request">Account creation details including customer ID and initial balance</param>
+    /// <returns>The newly created account ID and confirmation message</returns>
+    /// <response code="200">Account successfully created</response>
+    /// <response code="400">Invalid request data or business rule violation</response>
+    /// <example>
+    /// POST /api/account/open
+    /// {
+    ///   "customerId": "CUST001",
+    ///   "initialBalance": 1000.00,
+    ///   "description": "Initial deposit"
+    /// }
+    /// </example>
     [HttpPost("open")]
+    [ProducesResponseType(typeof(object), 200)]
+    [ProducesResponseType(typeof(object), 400)]
     public async Task<IActionResult> OpenAccount([FromBody] OpenAccountRequest request)
     {
         var result = await _accountService.OpenAccountAsync(
@@ -45,7 +76,16 @@ public class AccountController : ControllerBase
         );
     }
 
+    /// <summary>
+    /// Deposits money into an existing account
+    /// </summary>
+    /// <param name="request">Deposit details including account ID, amount, and description</param>
+    /// <returns>Updated account balance and confirmation message</returns>
+    /// <response code="200">Deposit successful</response>
+    /// <response code="400">Invalid request or account not found/frozen</response>
     [HttpPost("deposit")]
+    [ProducesResponseType(typeof(object), 200)]
+    [ProducesResponseType(typeof(object), 400)]
     public async Task<IActionResult> Deposit([FromBody] DepositRequest request)
     {
         var result = await _accountService.DepositAsync(
@@ -67,7 +107,16 @@ public class AccountController : ControllerBase
         );
     }
 
+    /// <summary>
+    /// Withdraws money from an account
+    /// </summary>
+    /// <param name="request">Withdrawal details including account ID, amount, and description</param>
+    /// <returns>Updated account balance and confirmation message</returns>
+    /// <response code="200">Withdrawal successful</response>
+    /// <response code="400">Insufficient funds, invalid request, or account frozen</response>
     [HttpPost("withdraw")]
+    [ProducesResponseType(typeof(object), 200)]
+    [ProducesResponseType(typeof(object), 400)]
     public async Task<IActionResult> Withdraw([FromBody] WithdrawRequest request)
     {
         var result = await _accountService.WithdrawAsync(
@@ -89,7 +138,16 @@ public class AccountController : ControllerBase
         );
     }
 
+    /// <summary>
+    /// Transfers money between two accounts
+    /// </summary>
+    /// <param name="request">Transfer details including source account, destination account, and amount</param>
+    /// <returns>Transfer confirmation with updated account information</returns>
+    /// <response code="200">Transfer successful</response>
+    /// <response code="400">Insufficient funds, invalid accounts, or business rule violation</response>
     [HttpPost("transfer")]
+    [ProducesResponseType(typeof(object), 200)]
+    [ProducesResponseType(typeof(object), 400)]
     public async Task<IActionResult> Transfer([FromBody] TransferRequest request)
     {
         var result = await _accountService.TransferAsync(
@@ -115,7 +173,17 @@ public class AccountController : ControllerBase
     }
 
     // Query endpoints
+
+    /// <summary>
+    /// Get current account summary information
+    /// </summary>
+    /// <param name="accountId">The account identifier</param>
+    /// <returns>Current account summary including balance, status, and metadata</returns>
+    /// <response code="200">Account summary retrieved successfully</response>
+    /// <response code="404">Account not found</response>
     [HttpGet("{accountId}/summary")]
+    [ProducesResponseType(typeof(object), 200)]
+    [ProducesResponseType(typeof(object), 404)]
     public async Task<IActionResult> GetAccountSummary(string accountId)
     {
         var result = await _queryService.GetAccountSummaryAsync(new AccountId(accountId));
@@ -126,7 +194,19 @@ public class AccountController : ControllerBase
         );
     }
 
+    /// <summary>
+    /// Get transaction history for an account
+    /// </summary>
+    /// <param name="accountId">The account identifier</param>
+    /// <param name="last">Limit to the last N transactions</param>
+    /// <param name="from">Start date for transaction history</param>
+    /// <param name="to">End date for transaction history</param>
+    /// <returns>Filtered transaction history</returns>
+    /// <response code="200">Transaction history retrieved successfully</response>
+    /// <response code="404">Account not found</response>
     [HttpGet("{accountId}/transactions")]
+    [ProducesResponseType(typeof(object), 200)]
+    [ProducesResponseType(typeof(object), 404)]
     public async Task<IActionResult> GetTransactionHistory(
         string accountId,
         [FromQuery] int? last = null,
@@ -147,7 +227,17 @@ public class AccountController : ControllerBase
         );
     }
 
+    /// <summary>
+    /// Get account balance at a specific point in time
+    /// </summary>
+    /// <param name="accountId">The account identifier</param>
+    /// <param name="date">The date to query balance for</param>
+    /// <returns>Account balance as it existed on the specified date</returns>
+    /// <response code="200">Balance retrieved successfully</response>
+    /// <response code="404">Account not found or no transactions by that date</response>
     [HttpGet("{accountId}/balance-at")]
+    [ProducesResponseType(typeof(object), 200)]
+    [ProducesResponseType(typeof(object), 404)]
     public async Task<IActionResult> GetBalanceAt(string accountId, [FromQuery] DateTimeOffset date)
     {
         var result = await _queryService.GetBalanceAtAsync(new AccountId(accountId), date);
@@ -158,8 +248,26 @@ public class AccountController : ControllerBase
         );
     }
 
-    // View all events for an account (useful for debugging and understanding event sourcing)
+    /// <summary>
+    /// 🔍 Event Sourcing: View all events for an account
+    /// </summary>
+    /// <param name="accountId">The account identifier</param>
+    /// <returns>Complete event stream showing every change to the account</returns>
+    /// <response code="200">Event stream retrieved successfully</response>
+    /// <response code="404">Account not found or no events exist</response>
+    /// <remarks>
+    /// This endpoint demonstrates the core of event sourcing - viewing the raw event stream.
+    /// Perfect for debugging, auditing, and understanding exactly what happened to an account.
+    ///
+    /// Each event contains:
+    /// - Event type (AccountOpened, MoneyDeposited, etc.)
+    /// - Version number for ordering
+    /// - Timestamp of when it occurred
+    /// - Complete event data
+    /// </remarks>
     [HttpGet("{accountId}/events")]
+    [ProducesResponseType(typeof(object), 200)]
+    [ProducesResponseType(typeof(object), 404)]
     public async Task<IActionResult> GetAccountEvents(string accountId)
     {
         try
@@ -188,8 +296,30 @@ public class AccountController : ControllerBase
         }
     }
 
-    // Time Travel: Get complete account state at a specific point in time
+    /// <summary>
+    /// ⏰ Time Travel: Get account state at any point in history
+    /// </summary>
+    /// <param name="accountId">The account identifier</param>
+    /// <param name="date">The historical date to query (e.g., 2024-01-15T10:30:00Z)</param>
+    /// <returns>Complete account state as it existed at the specified date</returns>
+    /// <response code="200">Historical state retrieved successfully</response>
+    /// <response code="404">Account not found or no state exists at the specified date</response>
+    /// <remarks>
+    /// This demonstrates event sourcing's powerful "time travel" capability.
+    /// By replaying events up to a specific date, we can reconstruct the exact
+    /// account state at any point in history.
+    ///
+    /// Use cases:
+    /// - Compliance reporting: "What was the balance on Dec 31st?"
+    /// - Debugging: "When did this issue start?"
+    /// - Dispute resolution: "What transactions occurred before the complaint?"
+    /// </remarks>
+    /// <example>
+    /// GET /api/account/ACC123/state-at?date=2024-01-15T10:30:00Z
+    /// </example>
     [HttpGet("{accountId}/state-at")]
+    [ProducesResponseType(typeof(object), 200)]
+    [ProducesResponseType(typeof(object), 404)]
     public async Task<IActionResult> GetAccountStateAt(
         string accountId,
         [FromQuery] DateTimeOffset date
@@ -233,8 +363,29 @@ public class AccountController : ControllerBase
         }
     }
 
-    // Time Travel: Get account timeline showing all changes over time
+    /// <summary>
+    /// 📈 Account Timeline: Chronological view of all account changes
+    /// </summary>
+    /// <param name="accountId">The account identifier</param>
+    /// <returns>Complete timeline showing account state after each event</returns>
+    /// <response code="200">Timeline generated successfully</response>
+    /// <response code="404">Account not found</response>
+    /// <remarks>
+    /// This endpoint provides a visual timeline of how the account evolved over time.
+    /// Each entry shows the account state immediately after a specific event occurred.
+    ///
+    /// Perfect for:
+    /// - Customer service representatives understanding account history
+    /// - Debugging account state issues
+    /// - Educational demonstrations of event sourcing
+    /// - Creating account activity visualizations
+    ///
+    /// The timeline includes balance progression, status changes, and event details
+    /// in chronological order.
+    /// </remarks>
     [HttpGet("{accountId}/timeline")]
+    [ProducesResponseType(typeof(object), 200)]
+    [ProducesResponseType(typeof(object), 404)]
     public async Task<IActionResult> GetAccountTimeline(string accountId)
     {
         try
@@ -275,8 +426,38 @@ public class AccountController : ControllerBase
         }
     }
 
-    // Time Travel: What-if scenario - show balance if certain transactions didn't happen
+    /// <summary>
+    /// 🤔 What-If Analysis: Hypothetical balance calculations
+    /// </summary>
+    /// <param name="accountId">The account identifier</param>
+    /// <param name="excludeFrom">Exclude events from this date onwards</param>
+    /// <param name="excludeTo">Exclude events up to this date</param>
+    /// <param name="excludeDescription">Exclude events containing this description</param>
+    /// <returns>Comparison of actual balance vs hypothetical balance</returns>
+    /// <response code="200">What-if analysis completed successfully</response>
+    /// <response code="404">Account not found</response>
+    /// <remarks>
+    /// This endpoint showcases event sourcing's analytical power by answering
+    /// "what if" questions about historical transactions.
+    ///
+    /// Examples:
+    /// - "What if those large withdrawals in March hadn't happened?"
+    /// - "What would the balance be without overdraft fees?"
+    /// - "How much did the customer spend on ATM withdrawals?"
+    ///
+    /// Perfect for:
+    /// - Customer service scenarios
+    /// - Financial planning discussions
+    /// - Fraud impact analysis
+    /// - Fee calculation verification
+    /// </remarks>
+    /// <example>
+    /// GET /api/account/ACC123/what-if?excludeDescription=overdraft
+    /// GET /api/account/ACC123/what-if?excludeFrom=2024-03-01&amp;excludeTo=2024-03-31
+    /// </example>
     [HttpGet("{accountId}/what-if")]
+    [ProducesResponseType(typeof(object), 200)]
+    [ProducesResponseType(typeof(object), 404)]
     public async Task<IActionResult> GetWhatIfBalance(
         string accountId,
         [FromQuery] DateTimeOffset? excludeFrom = null,
@@ -330,8 +511,38 @@ public class AccountController : ControllerBase
         }
     }
 
-    // Time Travel: Audit trail with detailed transaction history
+    /// <summary>
+    /// 📋 Compliance: Complete audit trail for regulatory reporting
+    /// </summary>
+    /// <param name="accountId">The account identifier</param>
+    /// <param name="from">Start date for audit period (optional)</param>
+    /// <param name="to">End date for audit period (optional)</param>
+    /// <returns>Chronological audit trail with detailed event information</returns>
+    /// <response code="200">Audit trail generated successfully</response>
+    /// <response code="404">Account not found</response>
+    /// <remarks>
+    /// This endpoint demonstrates event sourcing's built-in audit capabilities.
+    /// Every change is permanently recorded with timestamps, versions, and complete details.
+    ///
+    /// Perfect for:
+    /// - Regulatory compliance (SOX, PCI-DSS, etc.)
+    /// - Internal audits and reviews
+    /// - Dispute resolution and investigations
+    /// - Forensic analysis of account activity
+    ///
+    /// Features:
+    /// - Immutable audit trail (events cannot be modified or deleted)
+    /// - Cryptographic ordering via version numbers
+    /// - Complete transaction details with timestamps
+    /// - Filterable by date range
+    /// </remarks>
+    /// <example>
+    /// GET /api/account/ACC123/audit-trail
+    /// GET /api/account/ACC123/audit-trail?from=2024-01-01&amp;to=2024-12-31
+    /// </example>
     [HttpGet("{accountId}/audit-trail")]
+    [ProducesResponseType(typeof(object), 200)]
+    [ProducesResponseType(typeof(object), 404)]
     public async Task<IActionResult> GetAuditTrail(
         string accountId,
         [FromQuery] DateTimeOffset? from = null,
@@ -406,8 +617,13 @@ public class AccountController : ControllerBase
         };
     }
 
-    // Health check endpoint
+    /// <summary>
+    /// Health check endpoint for monitoring
+    /// </summary>
+    /// <returns>API health status and timestamp</returns>
+    /// <response code="200">API is healthy and operational</response>
     [HttpGet("health")]
+    [ProducesResponseType(typeof(object), 200)]
     public IActionResult Health()
     {
         return Ok(new { Status = "Healthy", Timestamp = DateTimeOffset.UtcNow });
@@ -415,15 +631,53 @@ public class AccountController : ControllerBase
 }
 
 // Request DTOs
-public record OpenAccountRequest(string CustomerId, decimal InitialBalance, string? Description);
 
-public record DepositRequest(string AccountId, decimal Amount, string? Description);
+/// <summary>
+/// Request to open a new bank account
+/// </summary>
+/// <param name="CustomerId">Unique identifier for the customer (e.g., "CUST001")</param>
+/// <param name="InitialBalance">Starting balance in USD (must be non-negative)</param>
+/// <param name="Description">Optional description for the account opening</param>
+public record OpenAccountRequest(
+    [Required] string CustomerId,
+    [Range(0, double.MaxValue)] decimal InitialBalance,
+    string? Description
+);
 
-public record WithdrawRequest(string AccountId, decimal Amount, string? Description);
+/// <summary>
+/// Request to deposit money into an account
+/// </summary>
+/// <param name="AccountId">Target account identifier</param>
+/// <param name="Amount">Amount to deposit in USD (must be positive)</param>
+/// <param name="Description">Optional description for the deposit transaction</param>
+public record DepositRequest(
+    [Required] string AccountId,
+    [Range(0.01, double.MaxValue)] decimal Amount,
+    string? Description
+);
 
+/// <summary>
+/// Request to withdraw money from an account
+/// </summary>
+/// <param name="AccountId">Source account identifier</param>
+/// <param name="Amount">Amount to withdraw in USD (must be positive)</param>
+/// <param name="Description">Optional description for the withdrawal transaction</param>
+public record WithdrawRequest(
+    [Required] string AccountId,
+    [Range(0.01, double.MaxValue)] decimal Amount,
+    string? Description
+);
+
+/// <summary>
+/// Request to transfer money between accounts
+/// </summary>
+/// <param name="FromAccountId">Source account identifier</param>
+/// <param name="ToAccountId">Destination account identifier</param>
+/// <param name="Amount">Amount to transfer in USD (must be positive)</param>
+/// <param name="Description">Optional description for the transfer transaction</param>
 public record TransferRequest(
-    string FromAccountId,
-    string ToAccountId,
-    decimal Amount,
+    [Required] string FromAccountId,
+    [Required] string ToAccountId,
+    [Range(0.01, double.MaxValue)] decimal Amount,
     string? Description
 );
