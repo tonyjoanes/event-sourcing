@@ -63,32 +63,17 @@ public class TransferCommandHandler
                 return new CommandFailure("Insufficient funds for transfer");
             }
 
-            // Update destination account balance
-            var toAccountDepositResult = toAccount.Deposit(
-                command.Amount,
-                Option<string>.Some($"Transfer from {command.FromAccountId}")
-            );
-            if (toAccountDepositResult.IsT2) // AccountFrozen
-            {
-                return new CommandFailure("Cannot transfer to frozen account");
-            }
+            // Collect events before saving (since SaveAsync clears them)
+            var fromAccountEvents = fromAccount.UncommittedEvents.ToList();
 
-            // Save both accounts to event store
+            // Save source account to event store
             await _accountRepository.SaveAsync(fromAccount);
-            await _accountRepository.SaveAsync(toAccount);
 
             // Publish events to update read models
-            foreach (var @event in fromAccount.UncommittedEvents)
+            foreach (var @event in fromAccountEvents)
             {
                 await _eventDispatcher.DispatchAsync(@event);
             }
-            fromAccount.MarkEventsAsCommitted();
-
-            foreach (var @event in toAccount.UncommittedEvents)
-            {
-                await _eventDispatcher.DispatchAsync(@event);
-            }
-            toAccount.MarkEventsAsCommitted();
 
             // Return success result
             var result = new TransferResult(

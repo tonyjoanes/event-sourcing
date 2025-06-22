@@ -13,6 +13,47 @@ public class SqliteReadModelStore : IReadModelStore
     public SqliteReadModelStore(string connectionString)
     {
         _connectionString = connectionString;
+        
+        // Configure Dapper to handle DateTimeOffset conversion from SQLite strings
+        SqlMapper.AddTypeHandler(new DateTimeOffsetHandler());
+        SqlMapper.AddTypeHandler(new NullableDateTimeOffsetHandler());
+    }
+
+    private class DateTimeOffsetHandler : SqlMapper.TypeHandler<DateTimeOffset>
+    {
+        public override DateTimeOffset Parse(object value)
+        {
+            if (value is string stringValue)
+            {
+                return DateTimeOffset.Parse(stringValue);
+            }
+            return (DateTimeOffset)value;
+        }
+
+        public override void SetValue(IDbDataParameter parameter, DateTimeOffset value)
+        {
+            parameter.Value = value.ToString("O"); // ISO 8601 format
+        }
+    }
+
+    private class NullableDateTimeOffsetHandler : SqlMapper.TypeHandler<DateTimeOffset?>
+    {
+        public override DateTimeOffset? Parse(object value)
+        {
+            if (value == null || value == DBNull.Value)
+                return null;
+            
+            if (value is string stringValue)
+            {
+                return DateTimeOffset.Parse(stringValue);
+            }
+            return (DateTimeOffset)value;
+        }
+
+        public override void SetValue(IDbDataParameter parameter, DateTimeOffset? value)
+        {
+            parameter.Value = value?.ToString("O") ?? (object)DBNull.Value;
+        }
     }
 
     private IDbConnection CreateConnection()

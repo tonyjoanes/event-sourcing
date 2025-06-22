@@ -34,16 +34,23 @@ public class OpenAccountCommandHandler
 
             var account = accountResult.AsT0;
 
+            // Collect events before saving (since SaveAsync clears them)
+            var eventsToDispatch = account.UncommittedEvents.ToList();
+
             // Save to event store
             await _accountRepository.SaveAsync(account);
 
             // Publish events to update read models
-            foreach (var @event in account.UncommittedEvents)
+            Console.WriteLine(
+                $"OpenAccountCommandHandler: About to dispatch {eventsToDispatch.Count} events"
+            );
+            foreach (var @event in eventsToDispatch)
             {
+                Console.WriteLine(
+                    $"OpenAccountCommandHandler: Dispatching event {@event.GetType().Name} for aggregate {@event.AggregateId}"
+                );
                 await _eventDispatcher.DispatchAsync(@event);
             }
-
-            account.MarkEventsAsCommitted();
 
             // Return success result
             var result = new OpenAccountResult(account.Id, account.CustomerId, account.Balance);

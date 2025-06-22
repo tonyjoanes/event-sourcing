@@ -13,6 +13,8 @@ public class AccountSummaryProjectionHandler
 
     public async Task HandleAsync(AccountOpened @event)
     {
+        Console.WriteLine($"AccountSummaryProjectionHandler.HandleAsync(AccountOpened) called for account {@event.AccountId.Value}");
+        
         var accountSummary = new AccountSummaryProjection
         {
             Id = @event.AccountId.Value,
@@ -27,7 +29,9 @@ public class AccountSummaryProjectionHandler
             MinimumBalance = 0,
         };
 
+        Console.WriteLine($"About to insert account summary for {accountSummary.Id}");
         await _readModelStore.InsertAsync(accountSummary);
+        Console.WriteLine($"Successfully inserted account summary for {accountSummary.Id}");
     }
 
     public async Task HandleAsync(MoneyDeposited @event)

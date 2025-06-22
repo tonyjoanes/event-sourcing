@@ -52,16 +52,17 @@ public class WithdrawCommandHandler
                 return new CommandFailure("Insufficient funds for withdrawal");
             }
 
+            // Collect events before saving (since SaveAsync clears them)
+            var eventsToDispatch = account.UncommittedEvents.ToList();
+
             // Save to event store
             await _accountRepository.SaveAsync(account);
 
             // Publish events to update read models
-            foreach (var @event in account.UncommittedEvents)
+            foreach (var @event in eventsToDispatch)
             {
                 await _eventDispatcher.DispatchAsync(@event);
             }
-
-            account.MarkEventsAsCommitted();
 
             // Return success result
             var result = new WithdrawResult(account.Id, command.Amount, account.Balance);

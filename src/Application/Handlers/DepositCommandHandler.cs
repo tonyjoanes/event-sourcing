@@ -47,16 +47,17 @@ public class DepositCommandHandler
                 return new CommandFailure("Cannot deposit to frozen account");
             }
 
+            // Collect events before saving (since SaveAsync clears them)
+            var eventsToDispatch = account.UncommittedEvents.ToList();
+
             // Save to event store
             await _accountRepository.SaveAsync(account);
 
             // Publish events to update read models
-            foreach (var @event in account.UncommittedEvents)
+            foreach (var @event in eventsToDispatch)
             {
                 await _eventDispatcher.DispatchAsync(@event);
             }
-
-            account.MarkEventsAsCommitted();
 
             // Return success result
             var result = new DepositResult(account.Id, command.Amount, account.Balance);
