@@ -20,4 +20,4 @@ public record AccountId
     public static implicit operator string(AccountId accountId) => accountId.Value;
 
     public override string ToString() => Value;
-} 
+}
