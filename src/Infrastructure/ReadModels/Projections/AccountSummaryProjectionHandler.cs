@@ -13,8 +13,10 @@ public class AccountSummaryProjectionHandler
 
     public async Task HandleAsync(AccountOpened @event)
     {
-        Console.WriteLine($"AccountSummaryProjectionHandler.HandleAsync(AccountOpened) called for account {@event.AccountId.Value}");
-        
+        Console.WriteLine(
+            $"AccountSummaryProjectionHandler.HandleAsync(AccountOpened) called for account {@event.AccountId.Value}"
+        );
+
         var accountSummary = new AccountSummaryProjection
         {
             Id = @event.AccountId.Value,

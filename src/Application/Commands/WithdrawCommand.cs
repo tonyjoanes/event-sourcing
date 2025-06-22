@@ -8,4 +8,4 @@ public record WithdrawCommand
     public required Money Amount { get; init; }
     public string? Description { get; init; }
     public DateTimeOffset RequestedAt { get; init; } = DateTimeOffset.UtcNow;
-} 
+}

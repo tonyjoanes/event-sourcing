@@ -13,7 +13,7 @@ public class SqliteReadModelStore : IReadModelStore
     public SqliteReadModelStore(string connectionString)
     {
         _connectionString = connectionString;
-        
+
         // Configure Dapper to handle DateTimeOffset conversion from SQLite strings
         SqlMapper.AddTypeHandler(new DateTimeOffsetHandler());
         SqlMapper.AddTypeHandler(new NullableDateTimeOffsetHandler());
@@ -42,7 +42,7 @@ public class SqliteReadModelStore : IReadModelStore
         {
             if (value == null || value == DBNull.Value)
                 return null;
-            
+
             if (value is string stringValue)
             {
                 return DateTimeOffset.Parse(stringValue);

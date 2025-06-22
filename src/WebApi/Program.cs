@@ -2,6 +2,9 @@ using Infrastructure.EventStore;
 using Infrastructure.ReadModels;
 using Infrastructure.ReadModels.Projections;
 using Infrastructure.Repositories;
+using Application.Services;
+using Application.Handlers;
+using WebApi.Middleware;
 using Raven.Client.Documents;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,12 +14,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Add controllers
+builder.Services.AddControllers();
+
 // RavenDB configuration (for development/demo)
 builder.Services.AddSingleton<IDocumentStore>(sp =>
 {
     var store = new DocumentStore
     {
-        Urls = new[] { "http://localhost:8080" },
+        Urls = new[] { "http://localhost:38888" },
         Database = "EventSourcingBankingDemo",
     };
     store.Initialize();
@@ -37,6 +43,21 @@ builder.Services.AddScoped<TransactionEnrichmentService>();
 builder.Services.AddScoped<EventDispatcher>();
 builder.Services.AddScoped<DatabaseInitializer>(sp => new DatabaseInitializer(connectionString));
 
+// Application layer services
+builder.Services.AddScoped<AccountService>();
+builder.Services.AddScoped<QueryService>();
+
+// Command handlers
+builder.Services.AddScoped<OpenAccountCommandHandler>();
+builder.Services.AddScoped<DepositCommandHandler>();
+builder.Services.AddScoped<WithdrawCommandHandler>();
+builder.Services.AddScoped<TransferCommandHandler>();
+
+// Query handlers
+builder.Services.AddScoped<GetAccountSummaryQueryHandler>();
+builder.Services.AddScoped<GetTransactionHistoryQueryHandler>();
+builder.Services.AddScoped<GetBalanceAtQueryHandler>();
+
 var app = builder.Build();
 
 // Initialize read models database
@@ -55,41 +76,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing",
-    "Bracing",
-    "Chilly",
-    "Cool",
-    "Mild",
-    "Warm",
-    "Balmy",
-    "Hot",
-    "Sweltering",
-    "Scorching",
-};
+// Add exception handling middleware
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-app.MapGet(
-        "/weatherforecast",
-        () =>
-        {
-            var forecast = Enumerable
-                .Range(1, 5)
-                .Select(index => new WeatherForecast(
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-                .ToArray();
-            return forecast;
-        }
-    )
-    .WithName("GetWeatherForecast")
-    .WithOpenApi();
+// Add routing and map controllers
+app.UseRouting();
+app.MapControllers();
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}

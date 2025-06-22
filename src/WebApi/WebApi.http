@@ -4,3 +4,165 @@ GET {{WebApi_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+
+### Event Sourcing Banking Demo API Tests
+
+@baseUrl = http://localhost:5116
+@contentType = application/json
+
+### Health Check
+GET {{baseUrl}}/api/account/health
+
+### 1. Open Account
+POST {{baseUrl}}/api/account/open
+Content-Type: {{contentType}}
+
+{
+  "customerId": "CUST12345",
+  "initialBalance": 1000.00,
+  "description": "Initial deposit"
+}
+
+### 2. Deposit Money (replace ACCOUNT_ID with the actual account ID from step 1)
+POST {{baseUrl}}/api/account/deposit
+Content-Type: {{contentType}}
+
+{
+  "accountId": "ACC8C9B5",
+  "amount": 500.00,
+  "description": "Salary deposit"
+}
+
+### 3. Withdraw Money (replace ACCOUNT_ID with the actual account ID from step 1)
+POST {{baseUrl}}/api/account/withdraw
+Content-Type: {{contentType}}
+
+{
+  "accountId": "ACC8C9B5",
+  "amount": 200.00,
+  "description": "ATM withdrawal"
+}
+
+### 4. Open Second Account for Transfer
+POST {{baseUrl}}/api/account/open
+Content-Type: {{contentType}}
+
+{
+  "customerId": "CUST67890",
+  "initialBalance": 500.00,
+  "description": "Secondary account"
+}
+
+### 5. Transfer Money (replace ACCOUNT1_ID and ACCOUNT2_ID with actual account IDs)
+POST {{baseUrl}}/api/account/transfer
+Content-Type: {{contentType}}
+
+{
+  "fromAccountId": "ACC8C9B5",
+  "toAccountId": "ACC21BBD",
+  "amount": 150.00,
+  "description": "Rent payment"
+}
+
+### 6. Get Account Summary (replace ACCOUNT_ID with actual account ID)
+GET {{baseUrl}}/api/account/ACC8C9B5/summary
+
+### 7. Get Transaction History (replace ACCOUNT_ID with actual account ID)
+GET {{baseUrl}}/api/account/ACC8C9B5/transactions?last=10
+
+### 8. Get Balance at Specific Date (replace ACCOUNT_ID with actual account ID)
+GET {{baseUrl}}/api/account/ACC8C9B5/balance-at?date=2024-06-15T12:00:00Z
+
+### 9. View All Events for Account (replace ACCOUNT_ID with actual account ID)
+GET {{baseUrl}}/api/account/ACC8C9B5/events
+
+### 10. Time Travel: Get Complete Account State at Point in Time
+GET {{baseUrl}}/api/account/ACC8C9B5/state-at?date=2024-06-22T14:30:00Z
+
+### 11. Time Travel: Get Account Timeline (All Changes Over Time)
+GET {{baseUrl}}/api/account/ACC8C9B5/timeline
+
+### 12. Time Travel: What-If Scenario (Balance if certain transactions didn't happen)
+GET {{baseUrl}}/api/account/ACC8C9B5/what-if?excludeDescription=withdrawal
+
+### 13. Time Travel: What-If Scenario (Exclude transactions in time range)
+GET {{baseUrl}}/api/account/ACC8C9B5/what-if?excludeFrom=2024-06-22T14:30:00Z&excludeTo=2024-06-22T14:35:00Z
+
+### 14. Time Travel: Audit Trail (Detailed transaction history)
+GET {{baseUrl}}/api/account/ACC8C9B5/audit-trail
+
+### 15. Time Travel: Audit Trail for Specific Period
+GET {{baseUrl}}/api/account/ACC8C9B5/audit-trail?from=2024-06-22T14:30:00Z&to=2024-06-22T14:40:00Z
+
+### Demo Scenario: Complete Banking Flow
+
+### Step 1: Open two accounts
+POST {{baseUrl}}/api/account/open
+Content-Type: {{contentType}}
+
+{
+  "customerId": "CUST001",
+  "initialBalance": 1000.00,
+  "description": "Primary account"
+}
+
+###
+
+POST {{baseUrl}}/api/account/open
+Content-Type: {{contentType}}
+
+{
+  "customerId": "CUST002",
+  "initialBalance": 500.00,
+  "description": "Secondary account"
+}
+
+### Step 2: Make some transactions (replace ACCOUNT1_ID and ACCOUNT2_ID)
+POST {{baseUrl}}/api/account/deposit
+Content-Type: {{contentType}}
+
+{
+  "accountId": "ACCOUNT1_ID",
+  "amount": 750.00,
+  "description": "Salary payment"
+}
+
+###
+
+POST {{baseUrl}}/api/account/withdraw
+Content-Type: {{contentType}}
+
+{
+  "accountId": "ACCOUNT1_ID",
+  "amount": 300.00,
+  "description": "Shopping"
+}
+
+###
+
+POST {{baseUrl}}/api/account/transfer
+Content-Type: {{contentType}}
+
+{
+  "fromAccountId": "ACCOUNT1_ID",
+  "toAccountId": "ACCOUNT2_ID",
+  "amount": 200.00,
+  "description": "Shared expenses"
+}
+
+### Step 3: Query the results (replace ACCOUNT1_ID and ACCOUNT2_ID)
+GET {{baseUrl}}/api/account/ACCOUNT1_ID/summary
+
+###
+
+GET {{baseUrl}}/api/account/ACCOUNT2_ID/summary
+
+###
+
+GET {{baseUrl}}/api/account/ACCOUNT1_ID/transactions?last=5
+
+###
+
+GET {{baseUrl}}/api/account/ACCOUNT1_ID/balance-at?date=2024-06-15T12:00:00Z
+
+###
