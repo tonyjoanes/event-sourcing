@@ -22,7 +22,7 @@ public class TransactionHistoryProjectionHandler
             Currency = @event.Amount.Currency,
             Description = @event.Description,
             Timestamp = @event.DepositedAt,
-            CustomerId = string.Empty // Will be populated from AccountSummary
+            CustomerId = string.Empty, // Will be populated from AccountSummary
         };
 
         await _readModelStore.InsertAsync(transaction);
@@ -39,7 +39,7 @@ public class TransactionHistoryProjectionHandler
             Currency = @event.Amount.Currency,
             Description = @event.Description,
             Timestamp = @event.WithdrawnAt,
-            CustomerId = string.Empty // Will be populated from AccountSummary
+            CustomerId = string.Empty, // Will be populated from AccountSummary
         };
 
         await _readModelStore.InsertAsync(transaction);
@@ -58,7 +58,7 @@ public class TransactionHistoryProjectionHandler
             Description = $"Transfer to {@event.ToAccountId.Value}: {@event.Description}",
             Timestamp = @event.TransferredAt,
             RelatedAccountId = @event.ToAccountId.Value,
-            CustomerId = string.Empty // Will be populated from AccountSummary
+            CustomerId = string.Empty, // Will be populated from AccountSummary
         };
 
         await _readModelStore.InsertAsync(sourceTransaction);
@@ -74,7 +74,7 @@ public class TransactionHistoryProjectionHandler
             Description = $"Transfer from {@event.FromAccountId.Value}: {@event.Description}",
             Timestamp = @event.TransferredAt,
             RelatedAccountId = @event.FromAccountId.Value,
-            CustomerId = string.Empty // Will be populated from AccountSummary
+            CustomerId = string.Empty, // Will be populated from AccountSummary
         };
 
         await _readModelStore.InsertAsync(destinationTransaction);
@@ -91,7 +91,7 @@ public class TransactionHistoryProjectionHandler
             Currency = @event.FeeAmount.Currency,
             Description = "Overdraft fee charge",
             Timestamp = @event.ChargedAt,
-            CustomerId = string.Empty // Will be populated from AccountSummary
+            CustomerId = string.Empty, // Will be populated from AccountSummary
         };
 
         await _readModelStore.InsertAsync(transaction);
@@ -108,7 +108,7 @@ public class TransactionHistoryProjectionHandler
             Currency = @event.InterestAmount.Currency,
             Description = "Interest accrued",
             Timestamp = @event.AccruedAt,
-            CustomerId = string.Empty // Will be populated from AccountSummary
+            CustomerId = string.Empty, // Will be populated from AccountSummary
         };
 
         await _readModelStore.InsertAsync(transaction);
@@ -125,7 +125,7 @@ public class TransactionHistoryProjectionHandler
             Currency = @event.TransactionAmount.Currency,
             Description = $"Compliance violation: {@event.ViolationType} - {@event.Reason}",
             Timestamp = @event.DetectedAt,
-            CustomerId = string.Empty // Will be populated from AccountSummary
+            CustomerId = string.Empty, // Will be populated from AccountSummary
         };
 
         await _readModelStore.InsertAsync(transaction);
@@ -140,9 +140,10 @@ public class TransactionHistoryProjectionHandler
             Type = "DailyLimitExceeded",
             Amount = @event.AttemptedAmount.Amount,
             Currency = @event.AttemptedAmount.Currency,
-            Description = $"Daily limit exceeded: attempted {@event.AttemptedAmount}, limit was {@event.DailyLimit}",
+            Description =
+                $"Daily limit exceeded: attempted {@event.AttemptedAmount}, limit was {@event.DailyLimit}",
             Timestamp = @event.AttemptedAt,
-            CustomerId = string.Empty // Will be populated from AccountSummary
+            CustomerId = string.Empty, // Will be populated from AccountSummary
         };
 
         await _readModelStore.InsertAsync(transaction);
@@ -157,11 +158,12 @@ public class TransactionHistoryProjectionHandler
             Type = "TransactionReversal",
             Amount = @event.ReversedAmount.Amount,
             Currency = @event.ReversedAmount.Currency,
-            Description = $"Transaction reversal: {@event.Reason} (Original: {@event.OriginalTransactionId})",
+            Description =
+                $"Transaction reversal: {@event.Reason} (Original: {@event.OriginalTransactionId})",
             Timestamp = @event.ReversedAt,
-            CustomerId = string.Empty // Will be populated from AccountSummary
+            CustomerId = string.Empty, // Will be populated from AccountSummary
         };
 
         await _readModelStore.InsertAsync(transaction);
     }
-} 
+}

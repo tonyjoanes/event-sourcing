@@ -9,5 +9,5 @@ public enum TransactionType
     InterestAccrual,
     ServiceCharge,
     Reversal,
-    Adjustment
-} 
+    Adjustment,
+}

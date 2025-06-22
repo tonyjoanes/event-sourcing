@@ -22,13 +22,13 @@ public class AccountTests
         // Assert
         result.IsT0.Should().BeTrue();
         var account = result.AsT0;
-        
+
         account.Id.Should().NotBeNull();
         account.CustomerId.Should().Be(customerId);
         account.Balance.Should().Be(initialBalance);
         account.Status.Should().Be(AccountStatus.Active);
         account.CreatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(1));
-        
+
         account.UncommittedEvents.Should().HaveCount(1);
         account.UncommittedEvents.First().Should().BeOfType<AccountOpened>();
     }
@@ -55,10 +55,16 @@ public class AccountTests
         // Assert
         result.IsT0.Should().BeTrue();
         account.Balance.Should().Be(new Money(1500m));
-        account.LastTransactionAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(1));
-        
+        account
+            .LastTransactionAt.Should()
+            .BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(1));
+
         account.UncommittedEvents.Should().HaveCount(2); // AccountOpened + MoneyDeposited
-        var depositEvent = account.UncommittedEvents.Last().Should().BeOfType<MoneyDeposited>().Subject;
+        var depositEvent = account
+            .UncommittedEvents.Last()
+            .Should()
+            .BeOfType<MoneyDeposited>()
+            .Subject;
         depositEvent.Amount.Should().Be(new Money(500m));
         depositEvent.Description.Should().Be("Salary");
     }
@@ -119,10 +125,16 @@ public class AccountTests
         // Assert
         result.IsT0.Should().BeTrue();
         account.Balance.Should().Be(new Money(700m));
-        account.LastTransactionAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(1));
-        
+        account
+            .LastTransactionAt.Should()
+            .BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(1));
+
         account.UncommittedEvents.Should().HaveCount(2);
-        var withdrawEvent = account.UncommittedEvents.Last().Should().BeOfType<MoneyWithdrawn>().Subject;
+        var withdrawEvent = account
+            .UncommittedEvents.Last()
+            .Should()
+            .BeOfType<MoneyWithdrawn>()
+            .Subject;
         withdrawEvent.Amount.Should().Be(new Money(300m));
         withdrawEvent.Description.Should().Be("ATM withdrawal");
     }
@@ -152,14 +164,22 @@ public class AccountTests
         var toAccountId = AccountId.Generate();
 
         // Act
-        var result = account.Transfer(new Money(400m), toAccountId, Option<string>.Some("Rent payment"));
+        var result = account.Transfer(
+            new Money(400m),
+            toAccountId,
+            Option<string>.Some("Rent payment")
+        );
 
         // Assert
         result.IsT0.Should().BeTrue();
         account.Balance.Should().Be(new Money(600m));
-        
+
         account.UncommittedEvents.Should().HaveCount(2);
-        var transferEvent = account.UncommittedEvents.Last().Should().BeOfType<MoneyTransferred>().Subject;
+        var transferEvent = account
+            .UncommittedEvents.Last()
+            .Should()
+            .BeOfType<MoneyTransferred>()
+            .Subject;
         transferEvent.Amount.Should().Be(new Money(400m));
         transferEvent.ToAccountId.Should().Be(toAccountId);
         transferEvent.Description.Should().Be("Rent payment");
@@ -195,9 +215,13 @@ public class AccountTests
         // Assert
         result.IsT0.Should().BeTrue();
         account.Status.Should().Be(AccountStatus.Frozen);
-        
+
         account.UncommittedEvents.Should().HaveCount(2);
-        var freezeEvent = account.UncommittedEvents.Last().Should().BeOfType<AccountFrozen>().Subject;
+        var freezeEvent = account
+            .UncommittedEvents.Last()
+            .Should()
+            .BeOfType<AccountFrozen>()
+            .Subject;
         freezeEvent.Reason.Should().Be("Suspicious activity");
     }
 
@@ -232,7 +256,7 @@ public class AccountTests
         // Assert
         result.IsT0.Should().BeTrue();
         account.Status.Should().Be(AccountStatus.Active);
-        
+
         account.UncommittedEvents.Should().HaveCount(3);
         account.UncommittedEvents.Last().Should().BeOfType<AccountUnfrozen>();
     }
@@ -266,9 +290,13 @@ public class AccountTests
         // Assert
         result.IsT0.Should().BeTrue();
         account.Status.Should().Be(AccountStatus.Closed);
-        
+
         account.UncommittedEvents.Should().HaveCount(2);
-        var closeEvent = account.UncommittedEvents.Last().Should().BeOfType<AccountClosed>().Subject;
+        var closeEvent = account
+            .UncommittedEvents.Last()
+            .Should()
+            .BeOfType<AccountClosed>()
+            .Subject;
         closeEvent.Reason.Should().Be("Customer request");
     }
 
@@ -301,9 +329,13 @@ public class AccountTests
 
         // Assert
         account.Balance.Should().Be(new Money(975m));
-        
+
         account.UncommittedEvents.Should().HaveCount(2);
-        var feeEvent = account.UncommittedEvents.Last().Should().BeOfType<OverdraftFeeCharged>().Subject;
+        var feeEvent = account
+            .UncommittedEvents.Last()
+            .Should()
+            .BeOfType<OverdraftFeeCharged>()
+            .Subject;
         feeEvent.FeeAmount.Should().Be(new Money(25m));
     }
 
@@ -319,9 +351,13 @@ public class AccountTests
 
         // Assert
         account.Balance.Should().Be(new Money(1005.50m));
-        
+
         account.UncommittedEvents.Should().HaveCount(2);
-        var interestEvent = account.UncommittedEvents.Last().Should().BeOfType<InterestAccrued>().Subject;
+        var interestEvent = account
+            .UncommittedEvents.Last()
+            .Should()
+            .BeOfType<InterestAccrued>()
+            .Subject;
         interestEvent.InterestAmount.Should().Be(new Money(5.50m));
     }
 
@@ -339,22 +375,22 @@ public class AccountTests
                 AccountId = accountId,
                 CustomerId = customerId,
                 InitialBalance = new Money(1000m),
-                OpenedAt = DateTimeOffset.UtcNow.AddDays(-1)
+                OpenedAt = DateTimeOffset.UtcNow.AddDays(-1),
             },
             new MoneyDeposited
             {
                 AccountId = accountId,
                 Amount = new Money(500m),
                 Description = "Salary",
-                DepositedAt = DateTimeOffset.UtcNow.AddHours(-12)
+                DepositedAt = DateTimeOffset.UtcNow.AddHours(-12),
             },
             new MoneyWithdrawn
             {
                 AccountId = accountId,
                 Amount = new Money(200m),
                 Description = "ATM",
-                WithdrawnAt = DateTimeOffset.UtcNow.AddHours(-6)
-            }
+                WithdrawnAt = DateTimeOffset.UtcNow.AddHours(-6),
+            },
         };
 
         var account = new Account();
@@ -383,7 +419,11 @@ public class AccountTests
 
         // Assert
         result.IsT0.Should().BeTrue();
-        var depositEvent = account.UncommittedEvents.Last().Should().BeOfType<MoneyDeposited>().Subject;
+        var depositEvent = account
+            .UncommittedEvents.Last()
+            .Should()
+            .BeOfType<MoneyDeposited>()
+            .Subject;
         depositEvent.Description.Should().Be("Deposit");
     }
 
@@ -399,7 +439,11 @@ public class AccountTests
 
         // Assert
         result.IsT0.Should().BeTrue();
-        var withdrawEvent = account.UncommittedEvents.Last().Should().BeOfType<MoneyWithdrawn>().Subject;
+        var withdrawEvent = account
+            .UncommittedEvents.Last()
+            .Should()
+            .BeOfType<MoneyWithdrawn>()
+            .Subject;
         withdrawEvent.Description.Should().Be("Withdrawal");
     }
 
@@ -416,7 +460,11 @@ public class AccountTests
 
         // Assert
         result.IsT0.Should().BeTrue();
-        var transferEvent = account.UncommittedEvents.Last().Should().BeOfType<MoneyTransferred>().Subject;
+        var transferEvent = account
+            .UncommittedEvents.Last()
+            .Should()
+            .BeOfType<MoneyTransferred>()
+            .Subject;
         transferEvent.Description.Should().Be("Transfer");
     }
 
@@ -432,7 +480,11 @@ public class AccountTests
 
         // Assert
         result.IsT0.Should().BeTrue();
-        var freezeEvent = account.UncommittedEvents.Last().Should().BeOfType<AccountFrozen>().Subject;
+        var freezeEvent = account
+            .UncommittedEvents.Last()
+            .Should()
+            .BeOfType<AccountFrozen>()
+            .Subject;
         freezeEvent.Reason.Should().Be("No reason provided");
     }
 
@@ -448,7 +500,11 @@ public class AccountTests
 
         // Assert
         result.IsT0.Should().BeTrue();
-        var closeEvent = account.UncommittedEvents.Last().Should().BeOfType<AccountClosed>().Subject;
+        var closeEvent = account
+            .UncommittedEvents.Last()
+            .Should()
+            .BeOfType<AccountClosed>()
+            .Subject;
         closeEvent.Reason.Should().Be("No reason provided");
     }
 

@@ -17,17 +17,28 @@ public record AccountLimits
     )
     {
         if (dailyWithdrawalLimit.Amount < 0)
-            throw new ArgumentException("Daily withdrawal limit cannot be negative", nameof(dailyWithdrawalLimit));
-        
+            throw new ArgumentException(
+                "Daily withdrawal limit cannot be negative",
+                nameof(dailyWithdrawalLimit)
+            );
+
         if (minimumBalance.Amount < 0)
-            throw new ArgumentException("Minimum balance cannot be negative", nameof(minimumBalance));
-        
+            throw new ArgumentException(
+                "Minimum balance cannot be negative",
+                nameof(minimumBalance)
+            );
+
         if (overdraftLimit.Amount < 0)
-            throw new ArgumentException("Overdraft limit cannot be negative", nameof(overdraftLimit));
+            throw new ArgumentException(
+                "Overdraft limit cannot be negative",
+                nameof(overdraftLimit)
+            );
 
         // Ensure all limits use the same currency
-        if (dailyWithdrawalLimit.Currency != minimumBalance.Currency ||
-            dailyWithdrawalLimit.Currency != overdraftLimit.Currency)
+        if (
+            dailyWithdrawalLimit.Currency != minimumBalance.Currency
+            || dailyWithdrawalLimit.Currency != overdraftLimit.Currency
+        )
         {
             throw new ArgumentException("All account limits must use the same currency");
         }
@@ -83,7 +94,7 @@ public record AccountLimits
         // If balance is positive, we're within overdraft limit
         if (balance.Amount >= 0)
             return true;
-        
+
         // If balance is negative, check if the negative amount is within overdraft limit
         return Math.Abs(balance.Amount) <= OverdraftLimit.Amount;
     }
@@ -92,4 +103,4 @@ public record AccountLimits
     {
         return $"Daily Limit: {DailyWithdrawalLimit}, Min Balance: {MinimumBalance}, Overdraft: {OverdraftLimit}";
     }
-} 
+}

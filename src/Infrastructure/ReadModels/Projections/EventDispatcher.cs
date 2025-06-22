@@ -15,8 +15,10 @@ public class EventDispatcher
     public async Task DispatchAsync(BaseEvent @event)
     {
         // Get all projection handlers
-        var accountSummaryHandler = _serviceProvider.GetRequiredService<AccountSummaryProjectionHandler>();
-        var transactionHistoryHandler = _serviceProvider.GetRequiredService<TransactionHistoryProjectionHandler>();
+        var accountSummaryHandler =
+            _serviceProvider.GetRequiredService<AccountSummaryProjectionHandler>();
+        var transactionHistoryHandler =
+            _serviceProvider.GetRequiredService<TransactionHistoryProjectionHandler>();
 
         // Route events to appropriate handlers
         switch (@event)
@@ -84,4 +86,4 @@ public class EventDispatcher
                 break;
         }
     }
-} 
+}

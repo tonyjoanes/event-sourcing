@@ -10,25 +10,25 @@ public class InfrastructureTests
     {
         // Arrange
         var expected = true;
-        
+
         // Act
         var actual = true;
-        
+
         // Assert
         Assert.Equal(expected, actual);
     }
-    
+
     [Fact]
     [Trait("Category", "Unit")]
     public void Should_Handle_Infrastructure_Scenario()
     {
         // Arrange
         var input = "infrastructure";
-        
+
         // Act
         var result = input.Length;
-        
+
         // Assert
         Assert.Equal(14, result);
     }
-} 
+}

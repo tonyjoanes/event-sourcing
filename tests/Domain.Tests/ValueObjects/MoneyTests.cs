@@ -47,7 +47,9 @@ public class MoneyTests
 
         // Act & Assert
         var action = () => usd + eur;
-        action.Should().Throw<InvalidOperationException>()
+        action
+            .Should()
+            .Throw<InvalidOperationException>()
             .WithMessage("Cannot add money with different currencies*");
     }
 
@@ -61,4 +63,4 @@ public class MoneyTests
         zero.Amount.Should().Be(0m);
         zero.Currency.Should().Be("USD");
     }
-} 
+}

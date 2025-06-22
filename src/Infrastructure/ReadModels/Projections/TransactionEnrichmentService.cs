@@ -15,7 +15,9 @@ public class TransactionEnrichmentService
     {
         if (string.IsNullOrEmpty(transaction.CustomerId))
         {
-            var accountSummary = await _readModelStore.GetByIdAsync<AccountSummaryProjection>(transaction.AccountId);
+            var accountSummary = await _readModelStore.GetByIdAsync<AccountSummaryProjection>(
+                transaction.AccountId
+            );
             if (accountSummary != null)
             {
                 transaction.CustomerId = accountSummary.CustomerId;
@@ -24,11 +26,13 @@ public class TransactionEnrichmentService
         }
     }
 
-    public async Task EnrichTransactionsAsync(IEnumerable<TransactionHistoryProjection> transactions)
+    public async Task EnrichTransactionsAsync(
+        IEnumerable<TransactionHistoryProjection> transactions
+    )
     {
         foreach (var transaction in transactions)
         {
             await EnrichTransactionAsync(transaction);
         }
     }
-} 
+}

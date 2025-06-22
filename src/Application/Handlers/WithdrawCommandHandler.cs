@@ -11,7 +11,10 @@ public class WithdrawCommandHandler
     private readonly AccountRepository _accountRepository;
     private readonly EventDispatcher _eventDispatcher;
 
-    public WithdrawCommandHandler(AccountRepository accountRepository, EventDispatcher eventDispatcher)
+    public WithdrawCommandHandler(
+        AccountRepository accountRepository,
+        EventDispatcher eventDispatcher
+    )
     {
         _accountRepository = accountRepository;
         _eventDispatcher = eventDispatcher;
@@ -33,7 +36,7 @@ public class WithdrawCommandHandler
                 ? Option<string>.Some(command.Description)
                 : Option<string>.None;
             var withdrawResult = account.Withdraw(command.Amount, descriptionOption);
-            
+
             if (withdrawResult.IsT3) // ValidationError
             {
                 return new CommandFailure(withdrawResult.AsT3.Message);
@@ -61,11 +64,7 @@ public class WithdrawCommandHandler
             account.MarkEventsAsCommitted();
 
             // Return success result
-            var result = new WithdrawResult(
-                account.Id,
-                command.Amount,
-                account.Balance
-            );
+            var result = new WithdrawResult(account.Id, command.Amount, account.Balance);
 
             return new CommandSuccess<WithdrawResult>(result);
         }
@@ -74,4 +73,4 @@ public class WithdrawCommandHandler
             return new CommandFailure($"Failed to withdraw: {ex.Message}");
         }
     }
-} 
+}

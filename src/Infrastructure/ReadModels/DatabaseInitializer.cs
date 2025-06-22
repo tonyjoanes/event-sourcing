@@ -18,7 +18,8 @@ public class DatabaseInitializer
         await connection.OpenAsync();
 
         // Create AccountSummary table
-        var createAccountSummaryTable = @"
+        var createAccountSummaryTable =
+            @"
             CREATE TABLE IF NOT EXISTS AccountSummaryProjection (
                 Id TEXT PRIMARY KEY,
                 CustomerId TEXT NOT NULL,
@@ -36,7 +37,8 @@ public class DatabaseInitializer
         await connection.ExecuteAsync(createAccountSummaryTable);
 
         // Create TransactionHistory table
-        var createTransactionHistoryTable = @"
+        var createTransactionHistoryTable =
+            @"
             CREATE TABLE IF NOT EXISTS TransactionHistoryProjection (
                 Id TEXT PRIMARY KEY,
                 AccountId TEXT NOT NULL,
@@ -52,7 +54,8 @@ public class DatabaseInitializer
         await connection.ExecuteAsync(createTransactionHistoryTable);
 
         // Create indexes for better query performance
-        var createIndexes = @"
+        var createIndexes =
+            @"
             CREATE INDEX IF NOT EXISTS IX_TransactionHistory_AccountId ON TransactionHistoryProjection(AccountId);
             CREATE INDEX IF NOT EXISTS IX_TransactionHistory_Timestamp ON TransactionHistoryProjection(Timestamp);
             CREATE INDEX IF NOT EXISTS IX_TransactionHistory_Type ON TransactionHistoryProjection(Type);
@@ -62,4 +65,4 @@ public class DatabaseInitializer
 
         await connection.ExecuteAsync(createIndexes);
     }
-} 
+}

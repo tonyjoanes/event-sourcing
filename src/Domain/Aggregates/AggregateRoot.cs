@@ -16,7 +16,7 @@ public abstract class AggregateRoot
     {
         @event.AggregateId = Id;
         @event.Version = _version + 1;
-        
+
         When(@event);
         _uncommittedEvents.Add(@event);
         _version++;
@@ -42,4 +42,4 @@ public abstract class AggregateRoot
     {
         // Override in derived classes to implement business rule validation
     }
-} 
+}

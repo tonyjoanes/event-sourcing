@@ -11,4 +11,4 @@ public class TransactionHistoryProjection
     public DateTimeOffset Timestamp { get; set; }
     public string? RelatedAccountId { get; set; } // For transfers
     public string CustomerId { get; set; } = default!;
-} 
+}

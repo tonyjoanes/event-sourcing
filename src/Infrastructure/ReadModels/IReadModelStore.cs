@@ -1,4 +1,5 @@
 using Domain.ValueObjects;
+using Infrastructure.ReadModels.Projections;
 
 namespace Infrastructure.ReadModels;
 
@@ -25,4 +26,13 @@ public interface IReadModelStore
         where T : class;
     Task<IEnumerable<T>> GetByCustomerIdAsync<T>(CustomerId customerId)
         where T : class;
+
+    // Account-specific query methods
+    Task<AccountSummaryProjection?> GetAccountSummaryAsync(string accountId);
+    Task<List<TransactionHistoryProjection>> GetTransactionHistoryAsync(
+        string accountId,
+        int limit = 50,
+        DateTimeOffset? fromDate = null,
+        DateTimeOffset? toDate = null
+    );
 }

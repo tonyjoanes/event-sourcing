@@ -110,4 +110,4 @@ public record TransactionReversed : BaseEvent
     public required Money ReversedAmount { get; init; }
     public required string Reason { get; init; }
     public DateTimeOffset ReversedAt { get; init; }
-} 
+}

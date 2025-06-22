@@ -42,4 +42,14 @@ public class AccountRepository
         );
         account.MarkEventsAsCommitted();
     }
+
+    public async Task<IEnumerable<BaseEvent>> GetEventsUpToAsync(
+        AccountId accountId,
+        DateTimeOffset upToDate,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var allEvents = await _eventStore.GetEventsAsync(accountId.Value, cancellationToken);
+        return allEvents.Where(e => e.Timestamp <= upToDate);
+    }
 }

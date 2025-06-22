@@ -11,7 +11,10 @@ public class TransferCommandHandler
     private readonly AccountRepository _accountRepository;
     private readonly EventDispatcher _eventDispatcher;
 
-    public TransferCommandHandler(AccountRepository accountRepository, EventDispatcher eventDispatcher)
+    public TransferCommandHandler(
+        AccountRepository accountRepository,
+        EventDispatcher eventDispatcher
+    )
     {
         _accountRepository = accountRepository;
         _eventDispatcher = eventDispatcher;
@@ -39,8 +42,12 @@ public class TransferCommandHandler
             var descriptionOption = command.Description is not null
                 ? Option<string>.Some(command.Description)
                 : Option<string>.None;
-            var transferResult = fromAccount.Transfer(command.Amount, command.ToAccountId, descriptionOption);
-            
+            var transferResult = fromAccount.Transfer(
+                command.Amount,
+                command.ToAccountId,
+                descriptionOption
+            );
+
             if (transferResult.IsT3) // ValidationError
             {
                 return new CommandFailure(transferResult.AsT3.Message);
@@ -57,7 +64,10 @@ public class TransferCommandHandler
             }
 
             // Update destination account balance
-            var toAccountDepositResult = toAccount.Deposit(command.Amount, Option<string>.Some($"Transfer from {command.FromAccountId}"));
+            var toAccountDepositResult = toAccount.Deposit(
+                command.Amount,
+                Option<string>.Some($"Transfer from {command.FromAccountId}")
+            );
             if (toAccountDepositResult.IsT2) // AccountFrozen
             {
                 return new CommandFailure("Cannot transfer to frozen account");
@@ -94,4 +104,4 @@ public class TransferCommandHandler
             return new CommandFailure($"Failed to transfer: {ex.Message}");
         }
     }
-} 
+}

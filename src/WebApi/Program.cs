@@ -17,7 +17,7 @@ builder.Services.AddSingleton<IDocumentStore>(sp =>
     var store = new DocumentStore
     {
         Urls = new[] { "http://localhost:8080" },
-        Database = "EventSourcingBankingDemo"
+        Database = "EventSourcingBankingDemo",
     };
     store.Initialize();
     return store;
@@ -28,7 +28,8 @@ builder.Services.AddScoped<IEventStore, RavenDbEventStore>();
 builder.Services.AddScoped<AccountRepository>();
 
 // Read models configuration
-var connectionString = builder.Configuration.GetConnectionString("ReadModels") ?? "Data Source=readmodels.db";
+var connectionString =
+    builder.Configuration.GetConnectionString("ReadModels") ?? "Data Source=readmodels.db";
 builder.Services.AddSingleton<IReadModelStore>(sp => new SqliteReadModelStore(connectionString));
 builder.Services.AddScoped<AccountSummaryProjectionHandler>();
 builder.Services.AddScoped<TransactionHistoryProjectionHandler>();
@@ -56,23 +57,35 @@ app.UseHttpsRedirection();
 
 var summaries = new[]
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+    "Freezing",
+    "Bracing",
+    "Chilly",
+    "Cool",
+    "Mild",
+    "Warm",
+    "Balmy",
+    "Hot",
+    "Sweltering",
+    "Scorching",
 };
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
+app.MapGet(
+        "/weatherforecast",
+        () =>
+        {
+            var forecast = Enumerable
+                .Range(1, 5)
+                .Select(index => new WeatherForecast(
+                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
+                    Random.Shared.Next(-20, 55),
+                    summaries[Random.Shared.Next(summaries.Length)]
+                ))
+                .ToArray();
+            return forecast;
+        }
+    )
+    .WithName("GetWeatherForecast")
+    .WithOpenApi();
 
 app.Run();
 

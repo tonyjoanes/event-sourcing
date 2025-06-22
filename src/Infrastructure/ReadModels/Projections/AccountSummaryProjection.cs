@@ -13,4 +13,4 @@ public class AccountSummaryProjection
     public decimal OverdraftLimit { get; set; }
     public decimal DailyLimit { get; set; }
     public decimal MinimumBalance { get; set; }
-} 
+}

@@ -29,7 +29,8 @@ public class TransactionIdTests
     {
         // Act & Assert
         Action act = () => new TransactionId(invalidValue);
-        act.Should().Throw<ArgumentException>()
+        act.Should()
+            .Throw<ArgumentException>()
             .WithMessage("*Transaction ID cannot be null or empty*");
     }
 
@@ -124,4 +125,4 @@ public class TransactionIdTests
         // Act & Assert
         id1.GetHashCode().Should().Be(id2.GetHashCode());
     }
-} 
+}

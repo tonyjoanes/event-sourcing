@@ -13,7 +13,8 @@ public abstract record Option<T>
     public T GetValueOrDefault(T defaultValue = default!)
     {
         // Treat null or default(Option<T>) as None
-        if (this is null || this is None<T>) return defaultValue;
+        if (this is null || this is None<T>)
+            return defaultValue;
         return IsSome ? Value : defaultValue;
     }
 }

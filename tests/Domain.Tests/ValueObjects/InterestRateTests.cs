@@ -45,8 +45,7 @@ public class InterestRateTests
     {
         // Act & Assert
         Action act = () => new InterestRate(negativeValue);
-        act.Should().Throw<ArgumentException>()
-            .WithMessage("*Interest rate cannot be negative*");
+        act.Should().Throw<ArgumentException>().WithMessage("*Interest rate cannot be negative*");
     }
 
     [Theory]
@@ -58,8 +57,7 @@ public class InterestRateTests
     {
         // Act & Assert
         Action act = () => new InterestRate(over100Value);
-        act.Should().Throw<ArgumentException>()
-            .WithMessage("*Interest rate cannot exceed 100%*");
+        act.Should().Throw<ArgumentException>().WithMessage("*Interest rate cannot exceed 100%*");
     }
 
     [Fact]
@@ -196,7 +194,8 @@ public class InterestRateTests
 
         // Act & Assert
         Action act = () => _ = rate1 + rate2;
-        act.Should().Throw<InvalidOperationException>()
+        act.Should()
+            .Throw<InvalidOperationException>()
             .WithMessage("*Cannot add interest rates with different types*");
     }
 
@@ -226,7 +225,8 @@ public class InterestRateTests
 
         // Act & Assert
         Action act = () => _ = rate1 - rate2;
-        act.Should().Throw<InvalidOperationException>()
+        act.Should()
+            .Throw<InvalidOperationException>()
             .WithMessage("*Cannot subtract interest rates with different types*");
     }
 
@@ -279,4 +279,4 @@ public class InterestRateTests
         // Act & Assert
         rate1.Should().NotBe(rate2);
     }
-} 
+}

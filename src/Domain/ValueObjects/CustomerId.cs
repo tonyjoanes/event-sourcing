@@ -20,4 +20,4 @@ public record CustomerId
     public static implicit operator string(CustomerId customerId) => customerId.Value;
 
     public override string ToString() => Value;
-} 
+}

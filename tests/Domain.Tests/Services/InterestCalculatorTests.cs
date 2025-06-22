@@ -172,7 +172,12 @@ public class InterestCalculatorTests
         var timesPerPeriod = 12; // Monthly compounding
 
         // Act
-        var interest = _calculator.CalculateCompoundInterest(principal, rate, periods, timesPerPeriod);
+        var interest = _calculator.CalculateCompoundInterest(
+            principal,
+            rate,
+            periods,
+            timesPerPeriod
+        );
 
         // Assert
         interest.Amount.Should().BeApproximately(1268.25m, 0.01m); // Compound interest formula
@@ -266,4 +271,4 @@ public class InterestCalculatorTests
         interest.Amount.Should().Be(0m);
         interest.Currency.Should().Be("USD");
     }
-} 
+}

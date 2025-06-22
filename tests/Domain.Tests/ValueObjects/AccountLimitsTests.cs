@@ -35,7 +35,8 @@ public class AccountLimitsTests
         var overdraftLimit = new Money(500m, "USD");
         var overdraftRate = new InterestRate(18.99m);
 
-        var action = () => new AccountLimits(negativeLimit, minimumBalance, overdraftLimit, overdraftRate);
+        var action = () =>
+            new AccountLimits(negativeLimit, minimumBalance, overdraftLimit, overdraftRate);
         action.Should().Throw<ArgumentException>().WithMessage("*cannot be negative*");
     }
 
@@ -49,7 +50,8 @@ public class AccountLimitsTests
         var overdraftLimit = new Money(500m, "USD");
         var overdraftRate = new InterestRate(18.99m);
 
-        var action = () => new AccountLimits(dailyLimit, negativeMinimumBalance, overdraftLimit, overdraftRate);
+        var action = () =>
+            new AccountLimits(dailyLimit, negativeMinimumBalance, overdraftLimit, overdraftRate);
         action.Should().Throw<ArgumentException>().WithMessage("*cannot be negative*");
     }
 
@@ -63,7 +65,8 @@ public class AccountLimitsTests
         var negativeOverdraftLimit = Money.CreateAllowNegative(-200m, "USD");
         var overdraftRate = new InterestRate(18.99m);
 
-        var action = () => new AccountLimits(dailyLimit, minimumBalance, negativeOverdraftLimit, overdraftRate);
+        var action = () =>
+            new AccountLimits(dailyLimit, minimumBalance, negativeOverdraftLimit, overdraftRate);
         action.Should().Throw<ArgumentException>().WithMessage("*cannot be negative*");
     }
 
@@ -79,7 +82,8 @@ public class AccountLimitsTests
 
         // Act & Assert
         Action act = () => new AccountLimits(dailyLimit, minBalance, overdraftLimit, overdraftRate);
-        act.Should().Throw<ArgumentException>()
+        act.Should()
+            .Throw<ArgumentException>()
             .WithMessage("*All account limits must use the same currency*");
     }
 
@@ -327,4 +331,4 @@ public class AccountLimitsTests
         // Act & Assert
         limits1.Should().NotBe(limits2);
     }
-} 
+}

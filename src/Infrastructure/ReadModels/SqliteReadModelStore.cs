@@ -1,6 +1,7 @@
 using System.Data;
 using Dapper;
 using Domain.ValueObjects;
+using Infrastructure.ReadModels.Projections;
 using Microsoft.Data.Sqlite;
 
 namespace Infrastructure.ReadModels;
@@ -122,6 +123,50 @@ public class SqliteReadModelStore : IReadModelStore
         var tableName = GetTableName<T>();
         var sql = $"SELECT * FROM {tableName} WHERE CustomerId = @CustomerId";
         return await connection.QueryAsync<T>(sql, new { CustomerId = customerId.Value });
+    }
+
+    public async Task<AccountSummaryProjection?> GetAccountSummaryAsync(string accountId)
+    {
+        using var connection = CreateConnection();
+        var sql = "SELECT * FROM AccountSummaryProjection WHERE Id = @AccountId";
+        return await connection.QueryFirstOrDefaultAsync<AccountSummaryProjection>(
+            sql,
+            new { AccountId = accountId }
+        );
+    }
+
+    public async Task<List<TransactionHistoryProjection>> GetTransactionHistoryAsync(
+        string accountId,
+        int limit = 50,
+        DateTimeOffset? fromDate = null,
+        DateTimeOffset? toDate = null
+    )
+    {
+        using var connection = CreateConnection();
+
+        var sql = "SELECT * FROM TransactionHistoryProjection WHERE AccountId = @AccountId";
+        var parameters = new Dictionary<string, object> { { "AccountId", accountId } };
+
+        if (fromDate.HasValue)
+        {
+            sql += " AND Timestamp >= @FromDate";
+            parameters["FromDate"] = fromDate.Value;
+        }
+
+        if (toDate.HasValue)
+        {
+            sql += " AND Timestamp <= @ToDate";
+            parameters["ToDate"] = toDate.Value;
+        }
+
+        sql += " ORDER BY Timestamp DESC LIMIT @Limit";
+        parameters["Limit"] = limit;
+
+        var transactions = await connection.QueryAsync<TransactionHistoryProjection>(
+            sql,
+            parameters
+        );
+        return transactions.ToList();
     }
 
     private static string GetTableName<T>()

@@ -12,4 +12,4 @@ public abstract record BaseEvent
     {
         EventType = GetType().Name;
     }
-} 
+}

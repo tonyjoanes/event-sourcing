@@ -59,7 +59,8 @@ public class InterestCalculator
             return Money.Zero(principal.Currency);
 
         var ratePerPeriod = rate.Value / 100m / timesPerPeriod;
-        var compoundFactor = (decimal)Math.Pow((double)(1 + ratePerPeriod), periods * timesPerPeriod);
+        var compoundFactor = (decimal)
+            Math.Pow((double)(1 + ratePerPeriod), periods * timesPerPeriod);
         var finalAmount = principal.Amount * compoundFactor;
         var interest = finalAmount - principal.Amount;
 
