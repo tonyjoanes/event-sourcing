@@ -1,0 +1,57 @@
+# Code Owners for Event Sourcing Banking Demo
+# 
+# This file defines who should be automatically requested for review
+# when changes are made to specific parts of the codebase.
+#
+# Learn more: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Global fallback - all files
+* @tonyjoanes
+
+# Event Sourcing Domain Logic - Critical business rules and patterns
+/src/Domain/ @tonyjoanes
+/src/Domain/Aggregates/ @tonyjoanes
+/src/Domain/Events/ @tonyjoanes
+/src/Domain/ValueObjects/ @tonyjoanes
+
+# Infrastructure - Event store and persistence patterns
+/src/Infrastructure/ @tonyjoanes
+/src/Infrastructure/EventStore/ @tonyjoanes
+/src/Infrastructure/ReadModels/ @tonyjoanes
+/src/Infrastructure/Repositories/ @tonyjoanes
+
+# API Endpoints - Public interface and contracts
+/src/WebApi/ @tonyjoanes
+/src/WebApi/Controllers/ @tonyjoanes
+
+# Application Layer - Command/Query handlers and services
+/src/Application/ @tonyjoanes
+/src/Application/Handlers/ @tonyjoanes
+/src/Application/Services/ @tonyjoanes
+
+# Tests - Quality assurance and coverage
+/tests/ @tonyjoanes
+/tests/Domain.Tests/ @tonyjoanes
+/tests/Infrastructure.Tests/ @tonyjoanes
+/tests/Integration.Tests/ @tonyjoanes
+
+# Documentation - Technical writing and guides
+*.md @tonyjoanes
+/docs/ @tonyjoanes
+README.md @tonyjoanes
+CONTRIBUTING.md @tonyjoanes
+
+# CI/CD and DevOps - Build, deployment, and automation
+/.github/ @tonyjoanes
+/.github/workflows/ @tonyjoanes
+docker/ @tonyjoanes
+docker-compose.yml @tonyjoanes
+
+# Configuration files - Project setup and dependencies
+*.csproj @tonyjoanes
+*.sln @tonyjoanes
+global.json @tonyjoanes
+codecov.yml @tonyjoanes
+
+# Scripts and tooling
+/scripts/ @tonyjoanes 

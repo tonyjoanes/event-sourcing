@@ -6,9 +6,9 @@ namespace Domain.Aggregates;
 
 public class Account : AggregateRoot
 {
-    public AccountId Id { get; private set; }
-    public CustomerId CustomerId { get; private set; }
-    public Money Balance { get; private set; }
+    public new AccountId Id { get; private set; } = null!;
+    public CustomerId CustomerId { get; private set; } = null!;
+    public Money Balance { get; private set; } = null!;
     public AccountStatus Status { get; private set; }
     public DateTimeOffset CreatedAt { get; private set; }
     public DateTimeOffset? LastTransactionAt { get; private set; }
