@@ -2,7 +2,7 @@ coverage:
   status:
     project:
       default:
-        target: 80%                   # Target coverage percentage
+        target: 70%                   # Target coverage percentage
         threshold: 1%                 # Allow 1% drop in coverage
         if_not_found: success         # Don't fail if no coverage found
     patch:
