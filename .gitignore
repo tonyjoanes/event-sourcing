@@ -22,6 +22,8 @@ TestResults/
 # Coverage reports
 *.coverage
 *.coveragexml
+coverage/
+coverage-new/
 
 # NuGet packages
 *.nupkg
