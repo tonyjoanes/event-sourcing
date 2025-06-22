@@ -3,7 +3,7 @@
 [![Build and Test](https://github.com/tonyjoanes/event-sourcing/actions/workflows/build.yml/badge.svg)](https://github.com/tonyjoanes/event-sourcing/actions/workflows/build.yml)
 [![.NET](https://img.shields.io/badge/.NET-8.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/8.0)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Code Coverage](https://img.shields.io/badge/coverage-0%25-red.svg)](https://github.com/tonyjoanes/event-sourcing)
+[![codecov](https://codecov.io/gh/tonyjoanes/event-sourcing/branch/main/graph/badge.svg)](https://codecov.io/gh/tonyjoanes/event-sourcing)
 
 A practical demonstration of Event Sourcing patterns using C#, showcasing how to build a robust banking system with complete audit trails, time travel capabilities, and powerful analytics.
 
@@ -42,65 +42,42 @@ This project demonstrates:
 - **API**: ASP.NET Core Minimal APIs
 - **Logging**: Serilog with structured logging
 
-## 📋 Features to Implement
+## ✨ Key Features
 
-### Core Domain (Banking)
-- [x] Account aggregate with event sourcing
-- [x] Account operations: Open, Deposit, Withdraw, Transfer
-- [x] Overdraft handling with business rules
-- [x] Interest calculation and fee processing
-- [x] Account freezing/closing
+This banking demo showcases a complete event sourcing implementation with:
 
-### Event Sourcing Infrastructure
-- [x] Event store abstraction
-- [x] RavenDB event store implementation
-- [x] Event serialization/deserialization
-- [x] Aggregate repository pattern
-- [x] Event versioning support
+**Core Banking Operations**
+- Account management with full event sourcing
+- Deposits, withdrawals, and transfers
+- Overdraft handling and business rule enforcement
+- Interest calculation and fee processing
+- Account lifecycle management (freezing/closing)
 
-### Functional Programming Patterns
-- [x] OneOf unions for command results
-- [x] Result<T, Error> for operation outcomes
-- [x] Option<T> for optional values
-- [x] Immutable event types
-- [x] Pure functions for business logic
+**Event Sourcing Infrastructure**
+- Robust event store abstraction with RavenDB implementation
+- Complete event serialization and versioning support
+- Aggregate repository pattern with optimistic concurrency control
 
-### Read Models & Projections
-- [x] Account summary projection
-- [x] Transaction history projection
-- [x] Customer analytics projection
-- [x] Compliance reporting projection
-- [x] Event handlers for projection updates
+**Functional Programming Patterns**
+- OneOf unions for type-safe command results
+- Result<T, Error> pattern for operation outcomes
+- Option<T> for handling optional values
+- Immutable event types and pure business logic functions
 
-### Time Travel & Analytics
-- [x] Point-in-time balance queries
-- [x] Historical transaction analysis
-- [x] Overdraft period detection
-- [x] Customer behavior profiling
-- [x] Seasonal spending patterns
+**CQRS with Read Models**
+- Optimized projections for account summaries and transaction history
+- Real-time read model updates via event handlers
+- Separate query models for analytics and compliance reporting
 
-### Console Application
-- [x] Interactive command interface
-- [x] Demo scenarios runner
-- [x] Event store browser
-- [x] Time travel demonstrations
-- [x] Analytics reporting
-- [x] Colored output for readability
+**Time Travel & Analytics**
+- Point-in-time balance queries and historical analysis
+- Customer behavior profiling and spending pattern detection
+- Comprehensive audit trails for compliance requirements
 
-### REST API
-- [x] Command endpoints (POST)
-- [x] Query endpoints (GET)
-- [x] Time travel endpoints
-- [x] Analytics endpoints
-- [x] Health checks
-- [x] OpenAPI documentation
-
-### Testing & Quality
-- [x] Unit tests for aggregates
-- [x] Integration tests for event store
-- [x] End-to-end API tests
-- [x] Property-based testing for invariants
-- [x] Performance benchmarks
+**Interactive Experiences**
+- Rich console application with demo scenarios
+- Full REST API with OpenAPI documentation
+- Time travel demonstrations and analytics reporting
 
 ## 🗂️ Project Structure
 

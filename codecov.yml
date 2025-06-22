@@ -1,0 +1,30 @@
+coverage:
+  status:
+    project:
+      default:
+        target: 80%                   # Target coverage percentage
+        threshold: 1%                 # Allow 1% drop in coverage
+        if_not_found: success         # Don't fail if no coverage found
+    patch:
+      default:
+        target: 70%                   # Target for new code
+        threshold: 1%
+        if_not_found: success
+
+comment:
+  layout: "reach,diff,flags,tree,reach"
+  behavior: default
+  require_changes: false
+
+github_checks:
+  annotations: true
+
+ignore:
+  - "**/*.Designer.cs"
+  - "**/bin/**"
+  - "**/obj/**"
+  - "**/*.Generated.cs"
+  - "**/Migrations/**"
+  - "**/Program.cs"                 # Often just startup code
+  - "**/*Tests/**"                  # Don't include test projects in coverage
+  - "tests/**" 
