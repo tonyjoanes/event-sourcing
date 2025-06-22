@@ -19,17 +19,169 @@ This project demonstrates:
 
 ## 🏗️ Architecture Overview
 
+### Event Sourcing Architecture Flow
+
+```mermaid
+graph TB
+    %% Client Layer
+    Client["`**Client Applications**
+    🌐 REST API Calls
+    💻 Console App
+    📱 Web UI`"]
+    
+    %% API Layer
+    API["`**AccountController**
+    📋 Command Endpoints
+    🔍 Query Endpoints
+    ⏰ Time Travel APIs`"]
+    
+    %% Application Layer
+    CmdService["`**AccountService**
+    📝 Business Logic
+    🛡️ Validation
+    🔄 Command Processing`"]
+    
+    QueryService["`**QueryService**
+    📊 Read Operations
+    🎯 Optimized Queries
+    📈 Analytics`"]
+    
+    %% Domain Layer
+    Account["`**Account Aggregate**
+    🏦 Business Rules
+    📋 State Management
+    🔄 Event Generation`"]
+    
+    Events["`**Domain Events**
+    📤 AccountOpened
+    💰 MoneyDeposited
+    💸 MoneyWithdrawn
+    🔄 MoneyTransferred`"]
+    
+    %% Infrastructure - Write Side
+    EventStore["`**Event Store**
+    🗄️ RavenDB
+    📚 Immutable Events
+    🔐 Append Only`"]
+    
+    Repository["`**Account Repository**
+    🔄 Event Sourcing
+    📖 Aggregate Hydration
+    💾 Event Persistence`"]
+    
+    %% Infrastructure - Read Side
+    EventDispatcher["`**Event Dispatcher**
+    🚀 Event Publishing
+    🔄 Async Processing
+    📡 Projection Updates`"]
+    
+    Projections["`**Projection Handlers**
+    📊 AccountSummary
+    📋 TransactionHistory
+    🎯 Read Model Updates`"]
+    
+    ReadStore["`**Read Model Store**
+    🗃️ SQLite Database
+    ⚡ Optimized Queries
+    📈 Denormalized Views`"]
+    
+    %% Command Flow
+    Client -->|"1. Commands<br/>💳 Open Account<br/>💰 Deposit<br/>💸 Withdraw<br/>🔄 Transfer"| API
+    API -->|"2. Validate &<br/>Process"| CmdService
+    CmdService -->|"3. Load Aggregate<br/>from Events"| Repository
+    Repository -->|"4. Fetch Events"| EventStore
+    EventStore -->|"5. Event Stream"| Repository
+    Repository -->|"6. Hydrated<br/>Aggregate"| CmdService
+    CmdService -->|"7. Execute<br/>Business Logic"| Account
+    Account -->|"8. Generate<br/>Domain Events"| Events
+    CmdService -->|"9. Persist<br/>New Events"| Repository
+    Repository -->|"10. Append<br/>Events"| EventStore
+    
+    %% Event Processing Flow
+    Repository -->|"11. Publish<br/>Events"| EventDispatcher
+    EventDispatcher -->|"12. Route to<br/>Projections"| Projections
+    Projections -->|"13. Update<br/>Read Models"| ReadStore
+    
+    %% Query Flow
+    Client -->|"🔍 Queries<br/>📊 Account Summary<br/>📋 Transaction History<br/>⏰ Time Travel"| API
+    API -->|"Query<br/>Processing"| QueryService
+    QueryService -->|"Read Model<br/>Queries"| ReadStore
+    ReadStore -->|"Optimized<br/>Data"| QueryService
+    QueryService -->|"Query<br/>Results"| API
+    API -->|"JSON<br/>Response"| Client
+    
+    %% Time Travel Flow
+    API -->|"⏰ Historical<br/>Queries"| Repository
+    Repository -->|"Events up to<br/>Point in Time"| EventStore
+    EventStore -->|"Filtered<br/>Event Stream"| Repository
+    Repository -->|"Reconstructed<br/>Historical State"| API
+    
+    %% Styling
+    classDef clientStyle fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef apiStyle fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef appStyle fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef domainStyle fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef infraStyle fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+    
+    class Client clientStyle
+    class API apiStyle
+    class CmdService,QueryService appStyle
+    class Account,Events domainStyle
+    class EventStore,Repository,EventDispatcher,Projections,ReadStore infraStyle
 ```
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   Console App   │    │   REST API       │    │  Event Handlers │
-│   (Commands)    │───▶│  (HTTP Layer)    │───▶│  (Projections)  │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
-                                │                        │
-                                ▼                        ▼
-                       ┌──────────────────┐    ┌─────────────────┐
-                       │   Event Store    │    │   Read Models   │
-                       │   (RavenDB)      │    │   (SQLite)      │
-                       └──────────────────┘    └─────────────────┘
+
+### Event Sourcing Interaction Patterns
+
+```mermaid
+sequenceDiagram
+    participant Client as 🌐 Client
+    participant API as 🎯 AccountController
+    participant Repo as 📚 Repository
+    participant Store as 🗄️ Event Store
+    participant Account as 🏦 Account Aggregate
+    
+    Note over Client,Account: 🔄 Normal Command Flow
+    Client->>+API: POST /api/account/deposit
+    API->>+Repo: Load Account from Events
+    Repo->>+Store: GetEventsAsync(accountId)
+    Store-->>-Repo: [Event1, Event2, Event3...]
+    Repo->>+Account: LoadFromHistory(events)
+    Account-->>-Repo: ✅ Hydrated Account
+    Repo-->>-API: Account with Current State
+    API->>+Account: Deposit(amount)
+    Account-->>-API: 📤 MoneyDeposited Event
+    API->>+Repo: SaveAsync(account)
+    Repo->>+Store: AppendEventsAsync(newEvents)
+    Store-->>-Repo: ✅ Events Persisted
+    Repo-->>-API: Success
+    API-->>-Client: 💰 Deposit Successful
+    
+    Note over Client,Account: ⏰ Time Travel Query Flow
+    Client->>+API: GET /api/account/{id}/state-at?date=2024-01-15
+    API->>+Repo: GetEventsUpToAsync(accountId, date)
+    Repo->>+Store: GetEventsAsync(accountId)
+    Store-->>-Repo: [All Events Ever]
+    Repo->>Repo: 🔍 Filter Events <= date
+    Repo->>+Account: LoadFromHistory(filteredEvents)
+    Account-->>-Repo: 🕰️ Historical State
+    Repo-->>-API: Account as of Jan 15th
+    API-->>-Client: 📊 Historical Balance & State
+    
+    Note over Client,Account: 🤔 What-If Analysis Flow
+    Client->>+API: GET /api/account/{id}/what-if?excludeDescription=fee
+    API->>+Store: GetEventsAsync(accountId)
+    Store-->>-API: [All Events]
+    API->>API: 🔍 Filter out events with "fee"
+    API->>+Account: LoadFromHistory(filteredEvents)
+    Account-->>-API: 🧮 Hypothetical State
+    API-->>-Client: 💡 "Balance without fees: $1,250"
+    
+    Note over Client,Account: 📋 Audit Trail Flow
+    Client->>+API: GET /api/account/{id}/audit-trail
+    API->>+Store: GetEventsAsync(accountId)
+    Store-->>-API: [Complete Event Stream]
+    API->>API: 📝 Format for Compliance
+    API-->>-Client: 📊 Immutable Audit Report
 ```
 
 ## 🔧 Technology Stack
